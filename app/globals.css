@@ -1,26 +1,356 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* =============================================================
+   DROPDONE DESIGN TOKENS
+   Color: mirrored from higgsfield.ai's live --hf-color-* tokens.
+   Type:  Epilogue (display + headings), Geist (body + UI),
+          Geist Mono (eyebrows, data, stats labels).
+   Dark-only theme. Drop this in as app/globals.css (Tailwind v4).
+   ============================================================= */
+
+@theme {
+  /* ---------- Surfaces (darkest to lightest) ---------- */
+  --color-header:          #0F1113; /* sticky header, bottom fades */
+  --color-page:            #131416; /* page background */
+  --color-section:         #18191C; /* alternate section band */
+  --color-surface:         #1C1E21; /* cards, tiles */
+  --color-surface-strong:  #23262A; /* inputs, media placeholders */
+  --color-surface-hover:   #2A2D32; /* card hover */
+  --color-glass:           #23262ABF; /* blurred overlays (75%) */
+
+  /* ---------- Lines (white at low alpha) ---------- */
+  --color-line-subtle:     #FFFFFF0D; /* 5%  */
+  --color-line:            #FFFFFF1A; /* 10% default border */
+  --color-line-strong:     #FFFFFF33; /* 20% */
+
+  /* ---------- Text ---------- */
+  --color-fg:              #FFFFFF;   /* headings */
+  --color-fg-soft:         #F7F7F8;   /* body copy */
+  --color-fg-muted:        #828282;   /* supporting copy, descriptions */
+  --color-fg-subtle:       #626262;   /* captions, metadata */
+  --color-fg-disabled:     #737475;
+  --color-fg-inverse:      #1A1A1A;   /* text on lime or white */
+
+  /* ---------- Brand: lime ---------- */
+  --color-brand:           #D1FE17;
+  --color-brand-200:       #F6FFD1;
+  --color-brand-300:       #EEFFA7;
+  --color-brand-700:       #8EAD10;
+  --color-brand-a10:       #D1FE171A;
+  --color-brand-a24:       #D1FE173D; /* ghost button fill */
+  --color-brand-a48:       #D1FE177A;
+
+  /* ---------- Accents (badges only, never large fills) ---------- */
+  --color-pink:            #FF005B;
+  --color-pink-400:        #FF5994;
+  --color-pink-800:        #85002F;
+  --color-blue:            #0256FE;
+  --color-yellow:          #FFEF33;
+  --color-cyan:            #9CE6F3;
+  --color-purple:          #8271F8;
+  --color-orange:          #FF773D;
+
+  /* ---------- Status ---------- */
+  --color-success:         #2EB844;
+  --color-warning:         #FFBE4C;
+  --color-danger:          #FA0019;
+  --color-danger-surface:  #E72930;
+
+  /* ---------- Type scale (fluid 375px to 1440px) ---------- */
+  --text-display:  clamp(2.75rem, 1.78rem + 4.13vw, 6rem);    /* 44 to 96 */
+  --text-h1:       clamp(2.25rem, 1.66rem + 2.63vw, 4rem);    /* 36 to 64 */
+  --text-h2:       clamp(1.75rem, 1.4rem + 1.5vw, 2.75rem);   /* 28 to 44 */
+  --text-h3:       clamp(1.375rem, 1.24rem + 0.56vw, 1.75rem);/* 22 to 28 */
+  --text-h4:       1.25rem;                                    /* 20 */
+  --text-stat:     clamp(2.5rem, 2.15rem + 1.5vw, 3.5rem);    /* 40 to 56 */
+  --text-lead:     clamp(1.125rem, 1.08rem + 0.19vw, 1.25rem);/* 18 to 20 */
+  --text-body:     1rem;                                       /* 16 */
+  --text-body-sm:  0.875rem;                                   /* 14 */
+  --text-label:    0.9375rem;                                  /* 15 */
+  --text-eyebrow:  0.75rem;                                    /* 12 */
+  --text-caption:  0.75rem;                                    /* 12 */
+  --text-data:     0.875rem;                                   /* 14 */
+
+  /* ---------- Radius ---------- */
+  --radius-sm:   6px;   /* badges, chips */
+  --radius-md:   10px;  /* buttons, inputs */
+  --radius-lg:   16px;  /* cards */
+  --radius-xl:   20px;  /* hero media, large cards */
+  --radius-pill: 999px;
+
+  /* ---------- Layout ---------- */
+  --container-site: 1240px; /* max-w-site */
 }
 
+/* next/font sets these variables on <html> at runtime (see fonts.ts) */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-epilogue), "Epilogue", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    var(--font-geist-sans), "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* =============================================================
+   TEXT STYLES
+   Use as classes (type-h1) or rely on the element defaults below.
+   Italic is reserved for type-display and type-stat only.
+   ============================================================= */
+
+@utility type-display {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: 900;
+  font-style: italic;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--color-fg);
+}
+
+@utility type-h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--color-fg);
+}
+
+@utility type-h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-fg);
+}
+
+@utility type-h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--color-fg);
+}
+
+@utility type-h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-h4);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--color-fg);
+}
+
+@utility type-stat {
+  font-family: var(--font-display);
+  font-size: var(--text-stat);
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-fg);
+}
+
+@utility type-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+@utility type-lead {
+  font-family: var(--font-sans);
+  font-size: var(--text-lead);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--color-fg-soft);
+}
+
+@utility type-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-fg-soft);
+}
+
+@utility type-body-sm {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-fg-muted);
+}
+
+@utility type-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+@utility type-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-fg-subtle);
+}
+
+@utility type-data {
+  font-family: var(--font-mono);
+  font-size: var(--text-data);
+  font-weight: 400;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =============================================================
+   BASE ELEMENTS
+   ============================================================= */
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background: var(--color-page);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply type-body;
+    background: var(--color-page);
+  }
+
+  h1 { @apply type-h1; }
+  h2 { @apply type-h2; }
+  h3 { @apply type-h3; }
+  h4 { @apply type-h4; }
+  p  { text-wrap: pretty; }
+  h1, h2, h3, h4 { text-wrap: balance; }
+  small { @apply type-caption; }
+  code, kbd, samp { @apply type-data; }
+
+  a {
+    color: var(--color-fg);
+    text-decoration-color: var(--color-line-strong);
+    text-underline-offset: 3px;
+    transition: color 150ms ease, text-decoration-color 150ms ease;
+  }
+  a:hover { text-decoration-color: var(--color-brand); }
+
+  ::selection {
+    background: var(--color-brand);
+    color: var(--color-fg-inverse);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* =============================================================
+   COMPONENTS (minimal set, mirrors Higgsfield's application)
+   ============================================================= */
+
+@layer components {
+  /* One per view: the single lime CTA */
+  .btn-brand {
+    @apply type-label;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 18px;
+    border-radius: var(--radius-md);
+    background: var(--color-brand);
+    color: var(--color-fg-inverse);
+    transition: background 150ms ease;
+  }
+  .btn-brand:hover { background: var(--color-brand-300); }
+
+  /* Secondary action next to a brand CTA */
+  .btn-ghost {
+    @apply type-label;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 18px;
+    border-radius: var(--radius-md);
+    background: var(--color-brand-a24);
+    color: var(--color-brand);
+    transition: background 150ms ease;
+  }
+  .btn-ghost:hover { background: var(--color-brand-a48); }
+
+  /* Neutral solid button (white) */
+  .btn-primary {
+    @apply type-label;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 18px;
+    border-radius: var(--radius-md);
+    background: var(--color-fg);
+    color: var(--color-page);
+  }
+
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line-subtle);
+    border-radius: var(--radius-lg);
+    transition: background 150ms ease, border-color 150ms ease;
+  }
+  .card:hover {
+    background: var(--color-surface-hover);
+    border-color: var(--color-line);
+  }
+
+  .input {
+    @apply type-body;
+    min-height: 44px; padding: 0 14px;
+    background: var(--color-surface-strong);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    color: var(--color-fg);
+  }
+  .input::placeholder { color: var(--color-fg-subtle); }
+  .input:focus { outline: none; border-color: var(--color-brand); }
+
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    display: inline-flex; align-items: center;
+    padding: 2px 8px; border-radius: var(--radius-sm);
+  }
+  .badge-pink { background: var(--color-pink); color: #FFFFFF; }
+  .badge-blue { background: var(--color-blue); color: #FFFFFF; }
+  .badge-lime { background: var(--color-brand); color: var(--color-fg-inverse); }
+}
+
+/* =============================================================
+   MOTION (landing page)
+   ============================================================= */
+
+html { scroll-behavior: smooth; }
+
+@keyframes row-in {
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@utility animate-row-in {
+  animation: row-in 320ms cubic-bezier(.2,.7,.2,1) both;
+  &:nth-child(2) { animation-delay: 40ms; }
+  &:nth-child(3) { animation-delay: 80ms; }
+  &:nth-child(4) { animation-delay: 120ms; }
+  &:nth-child(5) { animation-delay: 160ms; }
+  &:nth-child(6) { animation-delay: 200ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-row-in { animation: none; }
 }
