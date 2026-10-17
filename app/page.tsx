@@ -1,33 +1,15 @@
+import Link from "next/link";
 import { SiteHeader } from "./_components/site-header";
+import { SiteFooter } from "./_components/site-footer";
 import { Hero } from "./_components/hero";
-import { CleanDemo } from "./_components/clean-demo";
+import { FeatureCard } from "./_components/features";
+import { DragDropDone } from "./_components/drag-drop-done";
 import { Waitlist } from "./_components/waitlist";
 
 const stats = [
   { value: "20 min", label: "of hand cleanup on every weekly report at a county human services office" },
   { value: "17 hrs", label: "a year, for just one weekly report, that Dropdone gives back" },
   { value: "0", label: "formulas, macros, or rules you have to write" },
-];
-
-const steps = [
-  {
-    n: "01",
-    title: "Show it once",
-    body: "Drop in one messy export and the workbook you already cleaned by hand. Dropdone learns the target shape from your finished work.",
-    file: "export.csv + Report.xlsx",
-  },
-  {
-    n: "02",
-    title: "Drop the next one",
-    body: "Next week, drag the new export onto the app. Same cleanup, no clicks, no checklist taped to your monitor.",
-    file: "export_week2.csv",
-  },
-  {
-    n: "03",
-    title: "Your workbook updates",
-    body: "Your Excel file refreshes in place, formulas and formatting intact. Even if someone moved it to another folder.",
-    file: "Report.xlsx · updated",
-  },
 ];
 
 const compareRows: { label: string; dropdone: string; pq: string; copilot: string }[] = [
@@ -73,7 +55,7 @@ const audiences = [
   {
     title: "Government and nonprofit analysts",
     body: "Caseload, grant, and program reports pulled from the same system every week. Files stay on your machine, which your privacy officer will appreciate.",
-    examples: ["caseload_export.csv", "APR_roster.xlsx"],
+    examples: ["caseload_export.csv", "grant_report.xlsx"],
   },
   {
     title: "Small business and bookkeepers",
@@ -146,33 +128,40 @@ export default function Home() {
           <div className="mx-auto flex max-w-site flex-col gap-12 px-6 py-24 md:py-32">
             <div className="flex flex-col gap-4">
               <p className="type-eyebrow">How it works</p>
-              <h2 className="max-w-[22ch]">Three steps. You only do the first one once.</h2>
+              <h2>
+                Drag. Drop. <span className="text-brand">Done.</span>
+              </h2>
+              <p className="type-lead max-w-[60ch] text-fg-muted">
+                Show Dropdone your finished workbook once. After that, every messy report goes in one
+                side and comes out the other already cleaned.
+              </p>
             </div>
-            <ol className="grid gap-4 md:grid-cols-3">
-              {steps.map((s) => (
-                <li key={s.n} className="card flex flex-col gap-4 p-6">
-                  <span className="type-data text-brand">{s.n}</span>
-                  <h3>{s.title}</h3>
-                  <p className="type-body-sm">{s.body}</p>
-                  <span className="type-data mt-auto self-start rounded-sm bg-surface-strong px-2 py-1 text-xs text-fg-soft">
-                    {s.file}
-                  </span>
-                </li>
-              ))}
-            </ol>
+            <DragDropDone />
+          </div>
+        </section>
 
-            <div className="flex flex-col gap-6 pt-8">
-              <div className="flex flex-col gap-3">
-                <p className="type-eyebrow">Try it</p>
-                <h3 className="max-w-[30ch]">Pick an export. Press the button. That&apos;s the whole job.</h3>
+        {/* Features */}
+        <section id="features" className="scroll-mt-16 border-y border-line-subtle bg-section">
+          <div className="mx-auto flex max-w-site flex-col gap-10 px-6 py-24 md:py-32">
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <div className="flex flex-col gap-4">
+                <p className="type-eyebrow">Features</p>
+                <h2 className="max-w-[22ch]">Does the job the way you would. Then checks it.</h2>
               </div>
-              <CleanDemo />
+              <Link href="/features" className="btn-ghost no-underline">
+                See all features
+              </Link>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <FeatureCard feature="learn" />
+              <FeatureCard feature="ask" />
+              <FeatureCard feature="inPlace" />
             </div>
           </div>
         </section>
 
         {/* The idea */}
-        <section className="border-y border-line-subtle bg-section">
+        <section>
           <div className="mx-auto grid max-w-site gap-12 px-6 py-24 md:grid-cols-2 md:py-32">
             <div className="flex flex-col gap-4">
               <p className="type-eyebrow">The idea</p>
@@ -208,7 +197,7 @@ export default function Home() {
         </section>
 
         {/* Compare */}
-        <section id="compare" className="scroll-mt-16">
+        <section id="compare" className="scroll-mt-16 border-y border-line-subtle bg-section">
           <div className="mx-auto flex max-w-site flex-col gap-12 px-6 py-24 md:py-32">
             <div className="flex flex-col gap-4">
               <p className="type-eyebrow">Compare</p>
@@ -242,7 +231,7 @@ export default function Home() {
         </section>
 
         {/* Who it's for */}
-        <section className="border-y border-line-subtle bg-section">
+        <section>
           <div className="mx-auto flex max-w-site flex-col gap-12 px-6 py-24 md:py-32">
             <div className="flex flex-col gap-4">
               <p className="type-eyebrow">Who it&apos;s for</p>
@@ -267,7 +256,7 @@ export default function Home() {
         </section>
 
         {/* Pricing */}
-        <section id="pricing" className="scroll-mt-16">
+        <section id="pricing" className="scroll-mt-16 border-y border-line-subtle bg-section">
           <div className="mx-auto flex max-w-site flex-col gap-12 px-6 py-24 md:py-32">
             <div className="flex flex-col gap-4">
               <p className="type-eyebrow">Pricing</p>
@@ -302,7 +291,7 @@ export default function Home() {
         </section>
 
         {/* Waitlist */}
-        <section id="join" className="scroll-mt-16 border-t border-line-subtle bg-section">
+        <section id="join" className="scroll-mt-16">
           <div className="mx-auto grid max-w-site items-center gap-12 px-6 py-24 md:grid-cols-[auto_1fr] md:gap-16 md:py-32">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/dropdone-icon-animated.svg" alt="" className="size-28 md:size-40" />
@@ -321,15 +310,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="bg-header">
-        <div className="mx-auto flex max-w-site flex-col gap-6 px-6 py-12 md:flex-row md:items-center md:justify-between">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/dropdone-lockup.svg" alt="Dropdone" className="h-10 w-auto self-start" />
-          <p className="type-caption">
-            © 2026 Dropdone. Made in Phoenix for everyone who&apos;s ever fixed the same export twice.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

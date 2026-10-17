@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { LegacySystems } from "./legacy-systems";
 export function Hero() {
   return (
     <section
@@ -45,14 +47,15 @@ export function Hero() {
           Drag the messy export onto Dropdone. Your Excel workbook updates itself,
           wherever it lives. No formulas, no macros, no rules to write.
         </p>
+        <LegacySystems />
         <div className="flex flex-wrap gap-3">
           <a className="btn-brand no-underline" href="#join">
             <DownloadIcon />
             Download for Mac and Windows
           </a>
-          <a className="btn-ghost no-underline" href="#how">
+          <Link className="btn-ghost no-underline" href="/how-it-works">
             See how it works
-          </a>
+          </Link>
         </div>
         <p className="type-caption text-fg-muted">
           Free early access · Your files stay on your computer
