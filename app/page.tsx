@@ -8,45 +8,6 @@ import { FeatureCard } from "./_components/features";
 import { DragDropDone } from "./_components/drag-drop-done";
 import { Waitlist } from "./_components/waitlist";
 
-const compareRows: { label: string; dropdone: string; pq: string; copilot: string }[] = [
-  {
-    label: "How you set it up",
-    dropdone: "Show it one workbook you already finished",
-    pq: "Build each transformation step in the editor",
-    copilot: "Describe what you want in a prompt",
-  },
-  {
-    label: "Next week's export",
-    dropdone: "Drag it onto the app",
-    pq: "Refresh, if the file path and columns didn't change",
-    copilot: "Ask again in the new file",
-  },
-  {
-    label: "When the export's format changes",
-    dropdone: "Adjusted refresh matches your original output (Pro)",
-    pq: "Find and fix the broken steps by hand",
-    copilot: "Explain the changes and check the result",
-  },
-  {
-    label: "Checks its work",
-    dropdone: "Compares output to your finished workbook and asks before saving",
-    pq: "Only the checks you build yourself",
-    copilot: "You review the result",
-  },
-  {
-    label: "Where your data goes",
-    dropdone: "Stays on your computer",
-    pq: "Stays on your computer",
-    copilot: "Processed in Microsoft 365",
-  },
-  {
-    label: "Built for",
-    dropdone: "Anyone who cleans the same report every week",
-    pq: "Excel power users",
-    copilot: "Microsoft 365 Copilot subscribers",
-  },
-];
-
 const tiers = [
   {
     name: "Community",
@@ -89,13 +50,11 @@ export default function Home() {
       <main>
         <Hero />
         <TrustedBy />
-        <Security />
 
         {/* How it works */}
-        <section id="how" className="scroll-mt-16 border-y border-line-subtle bg-section">
+        <section id="how" className="scroll-mt-16">
           <div className="mx-auto flex max-w-site flex-col gap-12 px-6 py-24 md:py-32">
             <div className="flex flex-col gap-4">
-              <p className="type-eyebrow">How it works</p>
               <h2>
                 Drag. Drop. <span className="text-brand">Done.</span>
               </h2>
@@ -109,11 +68,10 @@ export default function Home() {
         </section>
 
         {/* Features */}
-        <section id="features" className="scroll-mt-16">
+        <section id="features" className="scroll-mt-16 border-y border-line-subtle bg-section">
           <div className="mx-auto flex max-w-site flex-col gap-10 px-6 py-24 md:py-32">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div className="flex flex-col gap-4">
-                <p className="type-eyebrow">Features</p>
                 <h2 className="max-w-[22ch]">Does the job the way you would. Then checks it.</h2>
               </div>
               <Link href="/features" className="btn-ghost no-underline">
@@ -128,45 +86,12 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Compare */}
-        <section id="compare" className="scroll-mt-16 border-y border-line-subtle bg-section">
-          <div className="mx-auto flex max-w-site flex-col gap-12 px-6 py-24 md:py-32">
-            <div className="flex flex-col gap-4">
-              <p className="type-eyebrow">Compare</p>
-              <h2 className="max-w-[24ch]">Built for people who clean reports, not people who write queries.</h2>
-            </div>
-            <div className="card overflow-x-auto hover:bg-surface">
-              <table className="w-full min-w-[720px] border-collapse text-left">
-                <thead>
-                  <tr className="border-b border-line">
-                    <th className="w-[22%] px-5 py-4" />
-                    <th scope="col" className="type-label px-5 py-4 text-brand">Dropdone</th>
-                    <th scope="col" className="type-label px-5 py-4 text-fg">Power Query</th>
-                    <th scope="col" className="type-label px-5 py-4 text-fg">Microsoft Copilot</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {compareRows.map((r) => (
-                    <tr key={r.label} className="border-b border-line-subtle last:border-0">
-                      <th scope="row" className="type-data px-5 py-4 align-top text-xs uppercase tracking-[0.06em] text-fg-muted">
-                        {r.label}
-                      </th>
-                      <td className="type-body-sm px-5 py-4 align-top text-fg-soft">{r.dropdone}</td>
-                      <td className="type-body-sm px-5 py-4 align-top">{r.pq}</td>
-                      <td className="type-body-sm px-5 py-4 align-top">{r.copilot}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
+        <Security />
 
         {/* Pricing */}
-        <section id="pricing" className="scroll-mt-16">
+        <section id="pricing" className="scroll-mt-16 border-y border-line-subtle bg-section">
           <div className="mx-auto flex max-w-site flex-col gap-12 px-6 py-24 md:py-32">
             <div className="flex flex-col gap-4">
-              <p className="type-eyebrow">Pricing</p>
               <h2 className="max-w-[22ch]">Free to start. Open source at the core.</h2>
             </div>
             <div className="grid gap-4 md:grid-cols-3">
@@ -198,13 +123,12 @@ export default function Home() {
         </section>
 
         {/* Waitlist */}
-        <section id="join" className="scroll-mt-16 border-t border-line-subtle bg-section">
+        <section id="join" className="scroll-mt-16">
           <div className="mx-auto grid max-w-site items-center gap-12 px-6 py-24 md:grid-cols-[auto_1fr] md:gap-16 md:py-32">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/dropdone-icon-animated.svg" alt="" className="size-28 md:size-40" />
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
-                <p className="type-eyebrow">Early access</p>
                 <h2 className="max-w-[20ch]">Stop cleaning the same report twice.</h2>
                 <p className="type-lead max-w-[60ch] text-fg-muted">
                   Dropdone is coming to Mac and Windows. Leave your email and we&apos;ll send

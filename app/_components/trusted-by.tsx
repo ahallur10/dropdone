@@ -2,6 +2,8 @@
 // for the hackathon concept site. Swap in real names and logo files (set `logo`) only
 // once an organization has agreed in writing to be listed.
 
+import { ComplianceBadges } from "./compliance-badges";
+
 type Emblem = "mountain" | "pine" | "wave" | "sun" | "cactus" | "star" | "river" | "wheat";
 
 const counties: { name: string; state: string; emblem: Emblem; logo?: string }[] = [
@@ -18,10 +20,12 @@ const counties: { name: string; state: string; emblem: Emblem; logo?: string }[]
 export function TrustedBy() {
   return (
     <section aria-label="Trusted by" className="border-b border-line-subtle bg-section">
-      <div className="mx-auto flex max-w-site flex-col gap-8 px-6 py-14">
-        <p className="type-eyebrow text-center text-fg-muted">Trusted by county and city teams</p>
+      <div className="mx-auto max-w-site px-6 pb-10 pt-16">
+        <p className="text-center font-display text-[clamp(1.25rem,1.1rem+0.6vw,1.6rem)] font-extrabold tracking-[-0.015em] text-fg-soft">
+          Trusted by county and city teams
+        </p>
       </div>
-      <div className="group relative overflow-hidden pb-14">
+      <div className="group relative overflow-hidden pb-4">
         {/* Edge fades so logos slide in and out instead of being cut off */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-linear-to-r from-section to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-linear-to-l from-section to-transparent" />
@@ -48,6 +52,7 @@ export function TrustedBy() {
           ))}
         </ul>
       </div>
+      <ComplianceBadges />
     </section>
   );
 }

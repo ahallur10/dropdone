@@ -1,6 +1,5 @@
-// Security section for IT reviewers. Lists how Dropdone is built and the rules it's
-// designed around. It deliberately doesn't show audit badges (SOC 2, StateRAMP and the like)
-// until those audits are actually done.
+// Security section for IT reviewers: how Dropdone is built to keep data where it is.
+// The regulations it's designed for are shown as badges under the Trusted by carousel.
 
 const controls = [
   {
@@ -35,22 +34,12 @@ const controls = [
   },
 ] as const;
 
-const standards = [
-  { name: "FERPA", detail: "Student records" },
-  { name: "HIPAA", detail: "Health information" },
-  { name: "CJIS", detail: "Criminal justice data" },
-  { name: "GLBA", detail: "Financial records" },
-  { name: "NIST 800-53", detail: "Federal security controls" },
-  { name: "State privacy laws", detail: "Including CCPA" },
-];
-
 export function Security() {
   return (
     <section id="security" className="scroll-mt-16">
       <div className="mx-auto flex max-w-site flex-col gap-12 px-6 py-24 md:py-28">
         <div className="grid gap-6 md:grid-cols-[1fr_1fr] md:items-end">
           <div className="flex flex-col gap-4">
-            <p className="type-eyebrow">Security</p>
             <h2 className="max-w-[18ch]">Built to pass your IT review.</h2>
           </div>
           <p className="max-w-[52ch] text-fg-muted">
@@ -70,18 +59,6 @@ export function Security() {
             </li>
           ))}
         </ul>
-
-        <div className="flex flex-col gap-4">
-          <p className="type-data text-xs uppercase tracking-[0.08em] text-fg-subtle">Designed for teams working under</p>
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {standards.map((s) => (
-              <li key={s.name} className="flex flex-col gap-1 rounded-lg border border-line px-4 py-4">
-                <span className="font-display text-lg font-extrabold tracking-[-0.01em] text-fg">{s.name}</span>
-                <span className="type-caption">{s.detail}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
     </section>
   );
