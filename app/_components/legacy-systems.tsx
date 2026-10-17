@@ -26,15 +26,15 @@ export function LegacySystems() {
   }, []);
 
   return (
-    <p className="type-lead flex flex-wrap items-center gap-x-3 gap-y-2 text-fg-soft">
+    <p className="type-h4 flex flex-wrap items-center gap-x-3 gap-y-2 text-fg">
       Clean data from
-      <span className="relative inline-flex h-10 w-[15.5rem] overflow-hidden rounded-md border border-line bg-glass backdrop-blur">
+      <span className="relative inline-flex h-11 w-[16.5rem] overflow-hidden rounded-md bg-glass outline outline-1 -outline-offset-1 outline-line-strong backdrop-blur">
         <span
           className="flex flex-col transition-transform duration-500 ease-[cubic-bezier(.2,.7,.2,1)]"
-          style={{ transform: `translateY(-${i * 2.5}rem)` }}
+          style={{ transform: `translateY(-${i * 2.75}rem)` }}
         >
           {systems.map((s) => (
-            <span key={s.name} className="flex h-10 items-center gap-2.5 px-2.5">
+            <span key={s.name} className="flex h-11 shrink-0 items-center gap-2.5 px-3">
               {s.logo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={s.logo} alt="" className="h-6 w-auto" />
@@ -43,7 +43,7 @@ export function LegacySystems() {
                   {s.monogram}
                 </span>
               )}
-              <span className="type-label whitespace-nowrap text-fg">{s.name}</span>
+              <span className="whitespace-nowrap text-fg">{s.name}</span>
             </span>
           ))}
         </span>
