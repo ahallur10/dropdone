@@ -1,9 +1,9 @@
 import Link from "next/link";
-// Compare and Pricing still live on the landing page until they get their own routes.
+// Pricing lives on the homepage; the rest are their own pages.
 const links = [
   { href: "/how-it-works", label: "How it works" },
   { href: "/features", label: "Features" },
-  { href: "/#compare", label: "Compare" },
+  { href: "/compare", label: "Compare" },
   { href: "/#pricing", label: "Pricing" },
 ];
 
