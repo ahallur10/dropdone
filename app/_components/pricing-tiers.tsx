@@ -42,7 +42,7 @@ const tiers = [
   {
     name: "Team",
     tag: "For a department",
-    price: { monthly: "Let's talk", yearly: "Let's talk" },
+    price: { monthly: "Custom", yearly: "Custom" },
     unit: "annual invoice",
     blurb: "For a department rolling Dropdone out after a pilot.",
     features: [
@@ -51,7 +51,13 @@ const tiers = [
       "A data-handling statement for your IT review",
       "Pay by annual invoice or purchase order",
     ],
-    cta: { label: "Talk to us", href: "#join", style: "btn-ghost" },
+    // Team goes through the same form as everyone else, so say so up front.
+    cta: {
+      label: "Apply for early access",
+      href: "#join",
+      style: "btn-ghost",
+      note: "Leave your contact details and we'll check back in with you about a Team pilot.",
+    },
   },
 ] as const;
 
@@ -114,7 +120,11 @@ export function PricingTiers() {
                   </li>
                 ))}
               </ul>
-              <Link href={t.cta.href} className={`${t.cta.style} ${t.cta.style === "btn-primary" ? "px-btn" : ""} mt-auto no-underline`}>
+              {"note" in t.cta && <p className="type-caption mt-auto -mb-2 text-fg-soft">{t.cta.note}</p>}
+              <Link
+                href={t.cta.href}
+                className={`${t.cta.style} ${t.cta.style === "btn-primary" ? "px-btn" : ""} ${"note" in t.cta ? "" : "mt-auto"} no-underline`}
+              >
                 {t.cta.style === "btn-primary" && <PixelLayers />}
                 {t.cta.label}
               </Link>
