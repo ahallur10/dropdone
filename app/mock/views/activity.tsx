@@ -9,24 +9,21 @@ type Filter = "all" | "updated" | "attention";
 const dot: Record<ActivityKind, string> = {
   updated: "bg-brand",
   learned: "bg-brand",
-  asked: "bg-warning",
-  nomatch: "bg-danger",
-  folder: "bg-fg-subtle",
+  warned: "bg-warning",
+  stopped: "bg-danger",
 };
 
 export function ActivityView({
   entries,
-  onTeach,
   onOpenHome,
 }: {
   entries: ActivityEntry[];
-  onTeach: () => void;
   onOpenHome: () => void;
 }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [restored, setRestored] = useState<Set<string>>(new Set());
 
-  const needsAttention = (e: ActivityEntry) => e.kind === "asked" || e.kind === "nomatch";
+  const needsAttention = (e: ActivityEntry) => e.kind === "warned" || e.kind === "stopped";
   const visible = entries.filter((e) =>
     filter === "all" ? true : filter === "updated" ? e.kind === "updated" : needsAttention(e),
   );
@@ -56,37 +53,24 @@ export function ActivityView({
                 {list.map((e) => {
                   const isRestored = restored.has(e.id);
                   return (
-                    <li key={e.id} className="grid grid-cols-[86px_14px_minmax(0,1fr)_auto] items-start gap-4 px-5 py-4">
+                    <li key={e.id} className="grid grid-cols-[96px_14px_minmax(0,1fr)_auto] items-start gap-4 px-5 py-4">
                       <span className="type-data pt-0.5 text-xs text-fg-subtle">{e.time}</span>
                       <span className={`mt-[7px] size-2 rounded-full ${dot[e.kind]}`} />
                       <div className="min-w-0">
                         <p className={`type-body-sm ${isRestored ? "text-fg-muted line-through" : "text-fg"}`}>{e.title}</p>
                         <p className="type-caption mt-0.5 truncate">
-                          {isRestored ? "Restored the previous version of this workbook." : e.detail}
+                          {isRestored ? "Restored the backup taken before this update." : e.detail}
                         </p>
                       </div>
                       <div className="flex gap-1">
-                        {e.kind === "updated" && !isRestored && (
-                          <>
-                            <button className={btnQuiet}>Open</button>
-                            {e.canRestore && (
-                              <button
-                                onClick={() => setRestored((s) => new Set(s).add(e.id))}
-                                className={btnQuiet}
-                              >
-                                Restore previous
-                              </button>
-                            )}
-                          </>
-                        )}
-                        {e.kind === "asked" && (
-                          <button onClick={onOpenHome} className={`${btnQuiet} text-warning hover:text-warning`}>
-                            Answer
+                        {e.kind === "updated" && !isRestored && e.canRestore && (
+                          <button onClick={() => setRestored((s) => new Set(s).add(e.id))} className={btnQuiet}>
+                            Restore backup
                           </button>
                         )}
-                        {e.kind === "nomatch" && (
-                          <button onClick={onTeach} className={btnQuiet}>
-                            Teach a workbook
+                        {needsAttention(e) && (
+                          <button onClick={onOpenHome} className={`${btnQuiet} text-warning hover:text-warning`}>
+                            Open
                           </button>
                         )}
                       </div>

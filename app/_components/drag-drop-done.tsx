@@ -5,7 +5,7 @@ import { Donut } from "../mock/ui";
 import { countyScenario, type DddScenario } from "./drag-drop-done-scenarios";
 
 /*
- * Drag, Drop, Done: a looping animation of a messy PDF report being dragged into the
+ * Drag, Drop, Done: a looping animation of a messy export (a legacy PDF converted to Excel) being dragged into the
  * Dropdone app and coming out as a clean workbook. Drawn on a fixed 1100x688 stage and
  * scaled to fit, so every position below is in stage pixels. Times are in ms.
  */
@@ -28,15 +28,15 @@ const T = {
 } as const;
 
 const PHASES = [
-  { key: "drag", n: "01", title: "Drag", body: "Grab the report your system spits out. PDF, CSV or Excel, mess and all.", start: 0 },
-  { key: "drop", n: "02", title: "Drop", body: "Drop it on Dropdone. It matches the file to a workbook it learned from you.", start: T.drag[1] },
-  { key: "done", n: "03", title: "Done", body: "Your workbook updates in place, checked against last time before it saves.", start: T.clean[1] },
+  { key: "drag", n: "01", title: "Drag", body: "Grab this week's export straight out of your system, mess and all.", start: 0 },
+  { key: "drop", n: "02", title: "Drop", body: "Drop it on its recipe. Dropdone runs the steps you approved, exactly as written.", start: T.drag[1] },
+  { key: "done", n: "03", title: "Done", body: "It checks the result against your workbook, then updates it in place.", start: T.clean[1] },
 ] as const;
 
 // Static frames used when motion is reduced (or a step is clicked with motion off).
 const STILL = [1250, 4900, 7900];
 
-const PDF = { x: 48, y: 108, w: 290, h: 375, grabX: 150, grabY: 118 };
+const PDF = { x: 34, y: 150, w: 344, h: 300, grabX: 172, grabY: 118 };
 const DROP_POINT = { x: 735, y: 410 };
 const CURSOR_START = { x: 330, y: 640 };
 const CURSOR_END = { x: 940, y: 660 };
@@ -125,7 +125,7 @@ export function DragDropDone({ scenario = countyScenario }: { scenario?: DddScen
         className="relative w-full overflow-hidden rounded-xl border border-line-subtle bg-section"
         style={{ height: H * scale }}
         role="img"
-        aria-label={`Animation: ${scenario.pdf.file} is dragged into Dropdone, cleaned, and saved into ${scenario.output.file}.`}
+        aria-label={`Animation: ${scenario.sheet.file} is dragged onto the ${scenario.recipe} recipe in Dropdone, cleaned, and saved into ${scenario.output.file}.`}
       >
         <div className="absolute left-0 top-0 origin-top-left" style={{ width: W, height: H, transform: `scale(${scale})` }}>
           <Scene t={t} scenario={scenario} />
@@ -174,7 +174,7 @@ function Scene({ t, scenario }: { t: number; scenario: DddScenario }) {
         progress={progress}
       />
 
-      {/* Messy PDF */}
+      {/* Messy export: a legacy PDF converted to Excel */}
       <div
         className="absolute left-0 top-0 origin-top-left"
         style={{
@@ -184,7 +184,7 @@ function Scene({ t, scenario }: { t: number; scenario: DddScenario }) {
           transform: `translate(${pdfPos.x}px, ${pdfPos.y}px) scale(${s}) rotate(${pdfRotate}deg)`,
         }}
       >
-        <PdfPage scenario={scenario} lifted={grabbing} />
+        <ExcelSheet scenario={scenario} lifted={grabbing} />
       </div>
 
       {/* Clean output */}
@@ -236,9 +236,9 @@ function MiniApp({
   const stage = progress >= 100 ? "done" : progress >= 80 ? "checking" : progress >= 50 ? "cleaning" : progress >= 22 ? "matching" : progress > 0 ? "reading" : "queued";
   const stageText = {
     queued: "Queued",
-    reading: "Reading PDF",
-    matching: "Matching columns",
-    cleaning: "Cleaning rows",
+    reading: "Reading export",
+    matching: "Running steps",
+    cleaning: "Running steps",
     checking: "Checking against workbook",
     done: "Workbook updated",
   }[stage];
@@ -295,8 +295,8 @@ function MiniApp({
                   style={{ maxHeight: rowSlide * 64, opacity: rowSlide * rowOpacity }}
                 >
                   <MiniRow
-                    file={scenario.pdf.file}
-                    workbook={scenario.output.file}
+                    file={scenario.sheet.file}
+                    workbook={scenario.recipe}
                     label={stageText}
                     detail={stage === "done" ? "Saved just now" : `${progress}%`}
                     donut={<Donut stage={stage} progress={progress} size={28} />}
@@ -308,7 +308,7 @@ function MiniApp({
                 <MiniRow
                   key={q.file}
                   file={q.file}
-                  workbook={q.workbook}
+                  workbook={q.recipe}
                   label="Workbook updated"
                   detail="Saved 2 min ago"
                   donut={<Donut stage="done" progress={100} size={28} />}
@@ -319,8 +319,8 @@ function MiniApp({
 
           {overlay && (
             <div className="absolute inset-3 top-14 flex flex-col items-center justify-start gap-2 rounded-lg pt-20 border-2 border-dashed border-brand bg-page/85">
-              <span className="type-h4">Drop to clean</span>
-              <span className="type-caption">Dropdone will match it to one of your workbooks.</span>
+              <span className="type-h4">Drop to run</span>
+              <span className="type-caption">Runs the {scenario.recipe} recipe</span>
             </div>
           )}
         </div>
@@ -347,7 +347,7 @@ function MiniRow({
   return (
     <div className={`grid h-16 grid-cols-[1.25fr_1fr_150px] items-center gap-4 border-b border-line-subtle px-4 last:border-0 ${highlight ? "bg-surface-hover" : ""}`}>
       <div className="flex min-w-0 items-center gap-2.5">
-        <span className={`type-data flex size-8 shrink-0 items-center justify-center rounded-md text-[9px] ${highlight ? "bg-danger/20 text-fg-soft" : "bg-surface-strong text-fg-muted"}`}>
+        <span className={`type-data flex size-8 shrink-0 items-center justify-center rounded-md text-[9px] ${highlight ? "bg-brand-a10 text-brand" : "bg-surface-strong text-fg-muted"}`}>
           {file.split(".").pop()?.toUpperCase()}
         </span>
         <span className="type-label truncate text-[12px] text-fg">{file}</span>
@@ -364,48 +364,105 @@ function MiniRow({
   );
 }
 
-function PdfPage({ scenario, lifted }: { scenario: DddScenario; lifted: boolean }) {
-  const { pdf } = scenario;
+// Column widths in stage px. B, D and G are the empty spacer columns a PDF conversion leaves;
+// E is too narrow, so "Withdrawn" gets cut off by the date next to it.
+const COLS = [36, 9, 64, 9, 28, 38, 9, 42, 93];
+const LETTERS = "ABCDEFGHI".split("");
+
+function ExcelSheet({ scenario, lifted }: { scenario: DddScenario; lifted: boolean }) {
+  const { sheet } = scenario;
   return (
     <div
-      className={`flex h-full w-full flex-col overflow-hidden rounded-[3px] bg-fg font-mono text-fg-inverse transition-[outline-color] ${
+      className={`flex h-full w-full flex-col overflow-hidden rounded-[4px] bg-fg font-sans text-fg-inverse transition-[outline-color] ${
         lifted ? "outline-2 outline-brand" : "outline-0"
       }`}
     >
-      {/* PDF viewer chip */}
-      <div className="flex items-center justify-between bg-danger px-2.5 py-1">
-        <span className="text-[9px] font-semibold tracking-wide text-fg">PDF</span>
-        <span className="truncate pl-2 text-[9px] text-fg">{pdf.file}</span>
+      {/* Window strip */}
+      <div className="flex items-center gap-2 border-b border-fg-inverse/10 bg-fg-inverse/5 px-2 py-1">
+        <span className="rounded-[2px] bg-fg-inverse/80 px-1 text-[7px] font-semibold text-fg">XLSX</span>
+        <span className="truncate text-[8px] text-fg-inverse/70">{sheet.file}</span>
       </div>
-      <div className="flex flex-1 flex-col px-3.5 py-3 text-[7.5px] leading-[1.45]">
-        <p className="font-bold">{pdf.org}</p>
-        <p className="font-bold">{pdf.title}</p>
-        <p className="opacity-70">{pdf.runLine}</p>
-        <p className="my-1 overflow-hidden whitespace-nowrap opacity-60">{"=".repeat(80)}</p>
-        <div className="grid grid-cols-[0.8fr_1.3fr_1fr_0.9fr] gap-1 font-bold">
-          {pdf.header.map((h) => (
-            <span key={h} className="truncate underline">
-              {h}
+      {/* Formula bar, with the leading spaces visible */}
+      <div className="flex items-center gap-1.5 border-b border-fg-inverse/10 px-1.5 py-[3px] text-[7.5px]">
+        <span className="w-6 rounded-[2px] border border-fg-inverse/15 text-center text-fg-inverse/70">{sheet.selected.ref}</span>
+        <span className="italic text-fg-inverse/40">fx</span>
+        <span className="whitespace-pre text-fg-inverse">{sheet.selected.value}</span>
+      </div>
+
+      {/* Grid */}
+      <div className="relative flex-1 overflow-hidden text-[7.25px] leading-none">
+        <div className="flex">
+          <span className="h-3 w-4 shrink-0 border-b border-r border-fg-inverse/10 bg-fg-inverse/5" />
+          {LETTERS.map((l, c) => (
+            <span
+              key={l}
+              className="flex h-3 shrink-0 items-center justify-center border-b border-r border-fg-inverse/10 bg-fg-inverse/5 text-[6.5px] text-fg-inverse/50"
+              style={{ width: COLS[c] }}
+            >
+              {l}
             </span>
           ))}
         </div>
-        {pdf.groups.map((g) => (
-          <div key={g.label} className="mt-1.5">
-            <p className="font-bold">{g.label}</p>
-            {g.rows.map((r, i) => (
-              <div key={i} className="grid grid-cols-[0.8fr_1.3fr_1fr_0.9fr] gap-1 whitespace-pre">
-                {r.map((c, j) => (
-                  <span key={j} className="truncate">
-                    {c}
-                  </span>
-                ))}
-              </div>
-            ))}
-            <p className="mt-0.5 text-right">{g.subtotal}</p>
-            <p className="overflow-hidden whitespace-nowrap opacity-50">{"-".repeat(80)}</p>
-          </div>
+        {sheet.rows.map((row, r) => {
+          const rowNo = r + 1;
+          const isHeader = sheet.headerRows.includes(rowNo);
+          const merged = row.length === 1;
+          return (
+            <div key={r} className="flex">
+              <span className="flex h-[13px] w-4 shrink-0 items-center justify-center border-b border-r border-fg-inverse/10 bg-fg-inverse/5 text-[6px] text-fg-inverse/50">
+                {rowNo}
+              </span>
+              {merged ? (
+                <span
+                  className="flex h-[13px] shrink-0 items-center justify-center border-b border-r border-fg-inverse/10 font-bold"
+                  style={{ width: COLS.reduce((a, b) => a + b, 0) }}
+                >
+                  {row[0]}
+                </span>
+              ) : (
+                row.map((cell, c) => {
+                  // Text spills into empty cells to its right, like Excel; it's cut off when the next cell has data.
+                  let spill = COLS[c];
+                  for (let k = c + 1; k < row.length && cell && !row[k]; k++) spill += COLS[k];
+                  const isAmount = /^\$/.test(cell);
+                  const selected = rowNo === sheet.selected.row && c === sheet.selected.col;
+                  return (
+                    <span
+                      key={c}
+                      className={`relative h-[13px] shrink-0 border-b border-r border-fg-inverse/10 ${selected ? "z-10 outline outline-[1.5px] -outline-offset-1 outline-success" : ""}`}
+                      style={{ width: COLS[c] }}
+                    >
+                      {cell && (
+                        <span
+                          className={`absolute inset-y-0 left-0 z-[1] flex items-center whitespace-pre px-[2px] ${isHeader ? "font-bold" : ""}`}
+                          style={{ width: spill, overflow: "hidden" }}
+                        >
+                          {cell}
+                        </span>
+                      )}
+                      {/* Excel's "number stored as text" marker */}
+                      {isAmount && (
+                        <span className="absolute left-0 top-0 z-[2] size-0 border-r-[4px] border-t-[4px] border-r-transparent border-t-success" />
+                      )}
+                    </span>
+                  );
+                })
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Sheet tabs, named the way PDF conversions name them */}
+      <div className="flex border-t border-fg-inverse/10 bg-fg-inverse/5 px-1">
+        {sheet.tabs.map((tab, i) => (
+          <span
+            key={tab}
+            className={`px-2 py-[3px] text-[7px] ${i === 0 ? "border-b-2 border-success bg-fg font-semibold" : "text-fg-inverse/60"}`}
+          >
+            {tab}
+          </span>
         ))}
-        <p className="mt-auto text-center opacity-60">{pdf.footer}</p>
       </div>
     </div>
   );

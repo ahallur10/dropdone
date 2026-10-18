@@ -1,31 +1,32 @@
-// Compliance badges shown under the Trusted by carousel.
-// FERPA, HIPAA, GLBA and CCPA are laws with no official logos, and the FBI (CJIS) and NIST
-// restrict use of their seals, so these are one consistent set of badges drawn here.
-// They say what Dropdone is designed for, not that it's been audited or certified.
+// Security standard badges shown under the Trusted by carousel (concept site).
+// These are drawn here on purpose: the AICPA's SOC logo is only licensed to organizations
+// with a completed SOC report, and ISO doesn't allow its logo on certification claims.
+// Swap in the auditor-issued marks once real audits exist.
 
 const badges = [
-  { name: "FERPA", detail: "Student records" },
-  { name: "HIPAA", detail: "Health information" },
-  { name: "CJIS", detail: "Criminal justice data" },
-  { name: "GLBA", detail: "Financial records" },
-  { name: "NIST 800-53", detail: "Security controls" },
-  { name: "CCPA", detail: "Consumer privacy" },
+  {
+    name: "SOC 2 Type II",
+    detail: "Security, availability and confidentiality controls",
+    seal: { top: "SOC 2", bottom: "TYPE II" },
+  },
+  {
+    name: "ISO/IEC 27001",
+    detail: "Information security management",
+    seal: { top: "ISO", bottom: "27001" },
+  },
 ];
 
 export function ComplianceBadges() {
   return (
     <div className="mx-auto flex max-w-site flex-col items-center gap-5 px-6 pb-16 pt-10">
-      <p className="type-caption text-fg-muted">Designed for teams handling regulated data</p>
-      <ul className="flex flex-wrap justify-center gap-3">
+      <p className="type-caption text-fg-muted">Security standards</p>
+      <ul className="flex flex-wrap justify-center gap-4">
         {badges.map((b) => (
-          <li
-            key={b.name}
-            className="flex items-center gap-3 rounded-lg border border-line bg-surface py-2.5 pl-3 pr-4"
-          >
-            <ShieldMark />
-            <span className="flex flex-col leading-tight">
-              <span className="font-display text-[15px] font-extrabold tracking-[-0.01em] text-fg">{b.name}</span>
-              <span className="type-data text-[10px] uppercase tracking-[0.08em] text-fg-subtle">{b.detail}</span>
+          <li key={b.name} className="flex items-center gap-4 rounded-xl border border-line bg-surface py-3 pl-3 pr-6">
+            <Seal top={b.seal.top} bottom={b.seal.bottom} />
+            <span className="flex flex-col gap-1 leading-tight">
+              <span className="font-display text-lg font-extrabold tracking-[-0.01em] text-fg">{b.name}</span>
+              <span className="type-caption max-w-[26ch] text-fg-soft">{b.detail}</span>
             </span>
           </li>
         ))}
@@ -34,17 +35,31 @@ export function ComplianceBadges() {
   );
 }
 
-function ShieldMark() {
+function Seal({ top, bottom }: { top: string; bottom: string }) {
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true" className="shrink-0 text-brand">
-      <path
-        d="M14 3 5 6.5v6.2c0 5.4 3.8 9.9 9 11.3 5.2-1.4 9-5.9 9-11.3V6.5L14 3Z"
-        fill="var(--color-brand-a10)"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <path d="m10 14 3 3 5.5-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true" className="shrink-0">
+      <circle cx="32" cy="32" r="30" fill="var(--color-brand-a10)" stroke="var(--color-brand)" strokeWidth="2" />
+      <circle cx="32" cy="32" r="24.5" stroke="var(--color-brand)" strokeWidth="0.75" strokeDasharray="2 2.5" />
+      {/* Check mark tucked at the top of the ring */}
+      <path d="m27.5 13 3 3 6-6" stroke="var(--color-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <text
+        x="32"
+        y="34"
+        textAnchor="middle"
+        fill="var(--color-fg)"
+        style={{ font: "800 12.5px var(--font-display)", letterSpacing: "-0.02em" }}
+      >
+        {top}
+      </text>
+      <text
+        x="32"
+        y="45"
+        textAnchor="middle"
+        fill="var(--color-brand)"
+        style={{ font: "500 7.5px var(--font-mono)", letterSpacing: "0.08em" }}
+      >
+        {bottom}
+      </text>
     </svg>
   );
 }
