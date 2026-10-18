@@ -14,6 +14,8 @@ import "server-only";
 const KEY = process.env.RESEND_API_KEY;
 const FROM = process.env.WAITLIST_FROM ?? "Dropdone <onboarding@resend.dev>";
 const NOTIFY = process.env.WAITLIST_NOTIFY;
+// Email clients don't show SVG, so the logo is a PNG served from the live site.
+const LOGO = "https://dropdone-kappa.vercel.app/brand/dropdone-lockup-email.png";
 
 async function send(to: string, subject: string, html: string, text: string) {
   if (!KEY) return;
@@ -44,7 +46,7 @@ export async function sendConfirmation(email: string) {
   const html = `<!doctype html><html><body style="margin:0;background:#131416;padding:32px 16px;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#18191C;border:1px solid #2A2C30;border-radius:14px">
-<tr><td style="padding:28px 28px 8px"><span style="display:inline-block;background:#D1FE17;color:#131416;font-weight:800;font-style:italic;border-radius:8px;padding:6px 10px">dropdone</span></td></tr>
+<tr><td style="padding:28px 28px 8px"><img src="${LOGO}" width="160" height="59" alt="Dropdone" style="display:block;border:0;width:160px;height:59px"></td></tr>
 <tr><td style="padding:12px 28px 0;color:#FFFFFF;font-size:22px;font-weight:700;line-height:1.3">You're on the list.</td></tr>
 <tr><td style="padding:12px 28px 0;color:#B9BBC0;font-size:15px;line-height:1.6">Dropdone learns a cleanup from one before and after, then does it on every export after that.</td></tr>
 <tr><td style="padding:12px 28px 28px;color:#B9BBC0;font-size:15px;line-height:1.6">We'll email you once, when your Mac or Windows download is ready. Nothing else.</td></tr>
