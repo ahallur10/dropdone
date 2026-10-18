@@ -13,6 +13,9 @@ export function Waitlist() {
   const [reports, setReports] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [returning, setReturning] = useState(false);
+  // Spam trap: a field people never see. Bots tend to fill every input.
+  const [website, setWebsite] = useState("");
   // State updates land after the event, so a ref is what actually stops a double submit.
   const inFlight = useRef(false);
 
@@ -27,10 +30,9 @@ export function Waitlist() {
     } catch {
       throw new Error("Couldn't reach the server. Check your connection and try again.");
     }
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.error ?? "Something went wrong. Try again?");
-    }
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.error ?? "Something went wrong. Try again?");
+    return body as { status?: "new" | "existing" };
   }
 
   async function onJoin(e: FormEvent) {
@@ -41,7 +43,8 @@ export function Waitlist() {
     setPending(true);
     setError(null);
     try {
-      await send({ email: email.trim() });
+      const { status } = await send({ email: email.trim(), website });
+      setReturning(status === "existing");
       setStep("survey");
     } catch (err) {
       setError((err as Error).message);
@@ -73,6 +76,17 @@ export function Waitlist() {
         <label htmlFor="waitlist-email" className="type-label text-fg-soft">
           Work email
         </label>
+        {/* Off-screen and skipped by keyboard and screen readers; only bots fill it in */}
+        <input
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+          className="absolute -left-[9999px] h-px w-px opacity-0"
+        />
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
             id="waitlist-email"
@@ -113,7 +127,9 @@ export function Waitlist() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          You&apos;re on the list. Two quick questions, both optional.
+          {returning
+            ? "You're already on the list. Two quick questions if you haven't answered them yet."
+            : "You're on the list. Two quick questions, both optional."}
         </p>
         <ChipGroup legend="What kind of team are you on?" options={teamTypes} value={team} onChange={setTeam} />
         <ChipGroup legend="How many reports do you clean a month?" options={reportCounts} value={reports} onChange={setReports} />
