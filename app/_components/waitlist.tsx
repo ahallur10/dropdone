@@ -78,7 +78,7 @@ export function Waitlist() {
             className="input w-full sm:flex-1"
           />
           <button type="submit" disabled={pending} className="btn-brand cursor-pointer disabled:opacity-60">
-            {pending ? "Joining…" : "Join early access"}
+            {pending ? "Saving…" : "Get early access"}
           </button>
         </div>
         {error ? (

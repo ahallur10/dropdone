@@ -189,11 +189,10 @@ export default function HowItWorks() {
         {/* CTA */}
         <section>
           <div className="mx-auto flex max-w-site flex-col items-start gap-6 px-6 py-24 md:py-32">
-            <p className="type-eyebrow">Early access</p>
             <h2 className="max-w-[20ch]">Stop cleaning the same report twice.</h2>
             <div className="flex flex-wrap gap-3">
               <Link href="/#join" className="btn-brand no-underline">
-                Join early access
+                Get early access
               </Link>
               <Link href="/features" className="btn-ghost no-underline">
                 See all features

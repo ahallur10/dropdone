@@ -3,10 +3,10 @@ import { LegacySystems } from "./legacy-systems";
 
 export function Hero() {
   return (
-    <section id="top" className="flex min-h-[100svh] items-center">
-      <div className="mx-auto grid w-full max-w-site items-center gap-12 px-6 pb-20 pt-28 lg:grid-cols-[1.08fr_1fr] lg:gap-14 lg:pb-24 lg:pt-32">
+    <section id="top" className="relative flex min-h-[100svh] items-center overflow-hidden">
+      <div className="mx-auto flex w-full max-w-site flex-col gap-12 px-6 pb-20 pt-28 lg:pb-24 lg:pt-32">
         {/* Copy */}
-        <div className="flex flex-col gap-6">
+        <div className="relative z-10 flex flex-col gap-6 lg:max-w-[46%]">
           <p className="type-eyebrow">For the export you clean every week</p>
           {/* Sized down from type-display so the headline fits half the width */}
           <h1 className="type-display text-[clamp(2.5rem,1.5rem+3vw,3.85rem)]!">
@@ -24,7 +24,7 @@ export function Hero() {
               Download for Mac and Windows
             </a>
             <a className="btn-primary no-underline" href="#join">
-              Join the waitlist
+              Get early access
             </a>
           </div>
           <p className="type-caption flex flex-wrap items-center gap-x-3 gap-y-1 text-fg-muted">
@@ -35,8 +35,10 @@ export function Hero() {
           </p>
         </div>
 
-        {/* Video: shown whole, at its own 16:9 shape, so nothing gets cropped */}
-        <div className="animate-fade-in relative aspect-[1928/1076] w-full overflow-hidden rounded-xl border border-line bg-surface">
+        {/* Video: shown whole at its own 16:9 shape. On large screens it fills the right side
+            of the hero, runs off the window edge, and fades into the page on its left, top and
+            bottom edges so it reads as part of the page rather than a framed window. */}
+        <div className="animate-fade-in relative aspect-[1928/1076] w-full overflow-hidden rounded-xl border border-line bg-surface lg:absolute lg:right-0 lg:top-1/2 lg:w-[64vw] lg:-translate-y-1/2 lg:rounded-none lg:border-0 lg:bg-transparent hero-fade">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/dropdone-hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
           <video

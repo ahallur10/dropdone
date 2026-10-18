@@ -3,53 +3,87 @@
 // once an organization has agreed in writing to be listed.
 
 import { ComplianceBadges } from "./compliance-badges";
+import { ReportsCounter } from "./reports-counter";
 
 type Emblem = "mountain" | "pine" | "wave" | "sun" | "cactus" | "star" | "river" | "wheat";
 
-const counties: { name: string; state: string; emblem: Emblem; logo?: string }[] = [
-  { name: "Saguaro Flats County", state: "AZ", emblem: "cactus" },
-  { name: "Pinecrest County", state: "OR", emblem: "pine" },
-  { name: "Copper Basin County", state: "NM", emblem: "mountain" },
-  { name: "Lakeshore County", state: "MI", emblem: "wave" },
-  { name: "Juniper Hills County", state: "NV", emblem: "sun" },
-  { name: "Harborview County", state: "WA", emblem: "river" },
-  { name: "Prairie Bend County", state: "KS", emblem: "wheat" },
-  { name: "Lone Star Valley County", state: "TX", emblem: "star" },
+// `reports` is reports cleaned in the last 12 months (fictional, like the counties).
+const counties: { name: string; state: string; emblem: Emblem; reports: number; logo?: string }[] = [
+  { name: "Saguaro Flats County", state: "AZ", emblem: "cactus", reports: 3812 },
+  { name: "Pinecrest County", state: "OR", emblem: "pine", reports: 2577 },
+  { name: "Copper Basin County", state: "NM", emblem: "mountain", reports: 1236 },
+  { name: "Lakeshore County", state: "MI", emblem: "wave", reports: 5940 },
+  { name: "Juniper Hills County", state: "NV", emblem: "sun", reports: 918 },
+  { name: "Harborview County", state: "WA", emblem: "river", reports: 6604 },
+  { name: "Prairie Bend County", state: "KS", emblem: "wheat", reports: 1610 },
+  { name: "Lone Star Valley County", state: "TX", emblem: "star", reports: 4402 },
 ];
+
+// Each report used to take about 20 minutes of hand cleanup.
+const hoursSaved = (reports: number) => Math.round((reports * 20) / 60);
+const fmt = (n: number) => n.toLocaleString("en-US");
 
 export function TrustedBy() {
   return (
     <section aria-label="Trusted by" className="border-b border-line-subtle bg-section">
-      <div className="mx-auto max-w-site px-6 pb-10 pt-16">
+      <div className="mx-auto flex max-w-site flex-col items-center gap-8 px-6 pb-10 pt-16">
+        <ReportsCounter />
         <p className="text-center font-display text-[clamp(1.25rem,1.1rem+0.6vw,1.6rem)] font-extrabold tracking-[-0.015em] text-fg-soft">
           Trusted by county and city teams
         </p>
       </div>
-      <div className="group relative overflow-hidden pb-4">
+      {/* overflow-x-clip (not hidden) so the hover cards can hang below the strip */}
+      <div className="group/strip relative z-20 overflow-x-clip pb-4">
         {/* Edge fades so logos slide in and out instead of being cut off */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-linear-to-r from-section to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-linear-to-l from-section to-transparent" />
-        <ul className="animate-marquee flex w-max group-hover:[animation-play-state:paused] motion-reduce:w-full motion-reduce:flex-wrap motion-reduce:justify-center">
-          {[...counties, ...counties].map((c, i) => (
-            <li
-              key={`${c.name}-${i}`}
-              aria-hidden={i >= counties.length}
-              className={`flex shrink-0 items-center gap-3 pr-14 text-fg-muted transition-colors hover:text-fg ${
-                i >= counties.length ? "motion-reduce:hidden" : ""
-              }`}
-            >
-              {c.logo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={c.logo} alt="" className="h-10 w-auto" />
-              ) : (
-                <Seal emblem={c.emblem} />
-              )}
-              <span className="flex flex-col leading-tight">
-                <span className="font-display text-[15px] font-bold tracking-[-0.01em]">{c.name}</span>
-                <span className="type-data text-[10px] uppercase tracking-[0.12em] text-fg-subtle">{c.state}</span>
-              </span>
-            </li>
-          ))}
+        <ul className="animate-marquee flex w-max group-hover/strip:[animation-play-state:paused] group-focus-within/strip:[animation-play-state:paused] motion-reduce:w-full motion-reduce:flex-wrap motion-reduce:justify-center">
+          {[...counties, ...counties].map((c, i) => {
+            const copy = i >= counties.length;
+            return (
+              <li
+                key={`${c.name}-${i}`}
+                aria-hidden={copy}
+                tabIndex={copy ? -1 : 0}
+                className={`group/county relative flex shrink-0 cursor-default items-center gap-3 pr-14 text-fg-muted outline-none transition-colors hover:text-fg focus-visible:text-fg ${
+                  copy ? "motion-reduce:hidden" : ""
+                }`}
+              >
+                {c.logo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.logo} alt="" className="h-10 w-auto" />
+                ) : (
+                  <Seal emblem={c.emblem} />
+                )}
+                <span className="flex flex-col leading-tight">
+                  <span className="font-display text-[15px] font-bold tracking-[-0.01em]">{c.name}</span>
+                  <span className="type-data text-[10px] uppercase tracking-[0.12em] text-fg-subtle">{c.state}</span>
+                </span>
+
+                {/* Hover card */}
+                <span
+                  role="tooltip"
+                  className="pointer-events-none absolute left-0 top-full z-30 mt-3 flex w-60 translate-y-1 flex-col gap-3 rounded-lg border border-line bg-surface-strong p-4 opacity-0 transition-[opacity,transform] duration-200 group-hover/county:translate-y-0 group-hover/county:opacity-100 group-focus-visible/county:translate-y-0 group-focus-visible/county:opacity-100"
+                >
+                  <span className="type-data text-[10px] uppercase tracking-[0.08em] text-fg-subtle">Last 12 months</span>
+                  <span className="grid grid-cols-2 gap-3">
+                    <span className="flex flex-col gap-0.5">
+                      <span className="font-display text-2xl font-black italic tabular-nums tracking-[-0.02em] text-brand">
+                        {fmt(hoursSaved(c.reports))}
+                      </span>
+                      <span className="type-caption text-fg-soft">hours saved</span>
+                    </span>
+                    <span className="flex flex-col gap-0.5">
+                      <span className="font-display text-2xl font-black italic tabular-nums tracking-[-0.02em] text-fg">
+                        {fmt(c.reports)}
+                      </span>
+                      <span className="type-caption text-fg-soft">reports cleaned</span>
+                    </span>
+                  </span>
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </div>
       <ComplianceBadges />
