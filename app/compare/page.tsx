@@ -100,7 +100,7 @@ const rows: { label: string; icon: IconName; dropdone: Cell; others: [Cell, Cell
 const notForYou = [
   "Every report is a one-off, so there's no cleanup to repeat.",
   "You need live data piped in straight from a database.",
-  "You want dashboards and charts, not a clean workbook.",
+  "Your exports already come out clean and ready to use.",
 ];
 const forYou = [
   "You clean the same export every week or every month.",
@@ -142,7 +142,10 @@ export default function ComparePage() {
         {/* Comparison: follows straight on from the opening, no divider */}
         <section>
           <div className="mx-auto flex max-w-site flex-col gap-10 px-6 pb-20 pt-8 md:pb-28 md:pt-10">
-            <h2 className="max-w-[24ch]">How it compares with the tools you already have.</h2>
+            <h2 className="mx-auto max-w-[24ch] text-center">
+              How it compares with the tools you already{" "}
+              <span className="underline decoration-brand decoration-[3px] underline-offset-[8px]">have</span>.
+            </h2>
             <ChangeDemo />
 
             <div className="-mx-6 overflow-x-auto px-6 lg:overflow-visible">
@@ -183,9 +186,13 @@ export default function ComparePage() {
         {/* Is it a fit? */}
         <section>
           <div className="mx-auto flex max-w-site flex-col gap-10 px-6 py-24 md:py-32">
-            <h2 className="type-h1 max-w-[20ch]">
-              Is Dropdone a{" "}
-              <span className="underline decoration-brand decoration-[3px] underline-offset-[8px]">fit</span>?
+            <h2 className="type-h1 flex flex-wrap items-center gap-x-[0.3em]">
+              Is
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/dropdone-lockup.svg" alt="Dropdone" className="inline-block h-[1.15em] w-auto" />
+              <span>
+                a <span className="underline decoration-brand decoration-[3px] underline-offset-[8px]">fit</span>?
+              </span>
             </h2>
             <div className="grid gap-4 md:grid-cols-2">
               <FitList title="Probably not, if…" items={notForYou} good={false} />
