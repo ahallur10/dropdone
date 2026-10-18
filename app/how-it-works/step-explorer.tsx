@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type ReactNode } from "react";
+import { CarouselDots } from "../_components/carousel-dots";
 
 export type ExplorerStep = {
   n: number;
@@ -43,7 +44,9 @@ export function StepExplorer({ steps }: { steps: ExplorerStep[] }) {
   }
 
   return (
-    <div className="grid gap-3 rounded-2xl border border-line-subtle bg-header p-3 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:p-4">
+    <>
+      <PhoneSteps steps={steps} />
+    <div className="grid gap-3 rounded-2xl border border-line-subtle bg-header p-3 max-md:hidden lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:p-4">
       {/* Step cards */}
       <div role="tablist" aria-label="How it works, step by step" onKeyDown={onKeyDown} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-rows-2">
         {steps.map((s, i) => {
@@ -112,6 +115,45 @@ export function StepExplorer({ steps }: { steps: ExplorerStep[] }) {
           <div className="my-auto w-full">{current.visual}</div>
         </div>
       </div>
+    </div>
+    </>
+  );
+}
+
+// Phones: each step and its visual together as one slide, swiped sideways, instead of
+// tapping a card and scrolling down to the panel. Tablets and up keep the cards and panel.
+function PhoneSteps({ steps }: { steps: ExplorerStep[] }) {
+  return (
+    <div className="flex flex-col gap-3 md:hidden">
+      <p className="type-caption">Swipe through the {steps.length} steps →</p>
+      <div
+        id="step-slides"
+        className="-mx-6 flex items-start snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-6 px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {steps.map((s) => (
+          <article
+            key={s.n}
+            aria-label={`Step ${s.n} of ${steps.length}: ${s.title}`}
+            className="flex w-[88%] shrink-0 snap-center flex-col overflow-hidden rounded-2xl border border-line-subtle bg-header"
+          >
+            <div className="flex flex-col gap-3 p-5">
+              <div className="flex items-center justify-between gap-3">
+                <span className="flex size-10 items-center justify-center rounded-full bg-brand font-display text-lg font-black italic text-fg-inverse">
+                  {s.n}
+                </span>
+                <StepTag tag={s.tag} />
+              </div>
+              <h3 className="type-h4">{s.title}</h3>
+              <p className="type-body-sm">{s.line}</p>
+            </div>
+            {/* Each slide sizes to its own visual; a long one scrolls inside its box */}
+            <div className="max-h-[520px] overflow-y-auto overscroll-contain border-t border-line-subtle bg-section p-4">
+              <div className="w-full">{s.visual}</div>
+            </div>
+          </article>
+        ))}
+      </div>
+      <CarouselDots targetId="step-slides" count={steps.length} label="step" />
     </div>
   );
 }

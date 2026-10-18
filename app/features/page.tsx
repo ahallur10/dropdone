@@ -14,7 +14,7 @@ import {
   UndoRestore,
 } from "./visuals";
 import { JoinSection } from "../_components/join-section";
-import { CarouselDots } from "./carousel-dots";
+import { CarouselDots } from "../_components/carousel-dots";
 
 export const metadata: Metadata = {
   title: "Features · Dropdone",
@@ -160,7 +160,7 @@ export default function FeaturesPage() {
               visual={<ProFixVisual />}
             />
           </div>
-          <CarouselDots targetId="feature-cards" count={8} />
+          <CarouselDots targetId="feature-cards" count={8} label="feature" />
         </section>
 
         {/* Join */}

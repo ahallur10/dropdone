@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-// Position dots for the phone carousel: follows the scroll of the element with `targetId`.
+// Position dots for a phone carousel: follows the scroll of the element with `targetId`.
 // Tapping a dot scrolls to that card. Hidden from tablets up, where the cards are a grid.
-export function CarouselDots({ targetId, count }: { targetId: string; count: number }) {
+export function CarouselDots({ targetId, count, label = "item" }: { targetId: string; count: number; label?: string }) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export function CarouselDots({ targetId, count }: { targetId: string; count: num
         <button
           key={i}
           type="button"
-          aria-label={`Show feature ${i + 1} of ${count}`}
+          aria-label={`Show ${label} ${i + 1} of ${count}`}
           aria-current={i === index ? "true" : undefined}
           onClick={() => go(i)}
           className="flex size-6 cursor-pointer items-center justify-center"
