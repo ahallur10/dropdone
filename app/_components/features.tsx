@@ -48,7 +48,8 @@ export function FeatureCard({ feature }: { feature: FeatureKey }) {
   const copy = featureCopy[feature];
   return (
     <article className="card flex flex-col overflow-hidden hover:bg-surface">
-      <div className="border-b border-line-subtle bg-section">
+      {/* Phones read the title first, with the animation underneath; larger screens keep it on top */}
+      <div className="border-line-subtle bg-section max-md:order-last max-md:border-t md:border-b">
         <Vignette />
       </div>
       <div className="flex flex-col gap-2 p-6">
