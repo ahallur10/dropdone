@@ -42,22 +42,10 @@ export function ChangeDemo() {
   const shifted = step >= 1;
   const reading = step >= 2;
   const done = step >= 4;
-  const caption = !shifted
-    ? "Last week's export: the header is on row 1."
-    : !reading
-      ? "This week, two new lines appear above the header."
-      : done
-        ? "Same change, four different outcomes."
-        : "Each tool looks for the header…";
 
   return (
     <div ref={ref} className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h3 className="type-h3">What happens when next week&apos;s export changes?</h3>
-        <p className="type-data text-xs text-fg-soft" aria-live="polite">
-          {caption}
-        </p>
-      </div>
+      <h3 className="type-h3 text-center">What happens when next week&apos;s export changes?</h3>
       {/* Phones swipe between the four tools; larger screens see them side by side */}
       <ul
         id="change-cards"
@@ -96,7 +84,9 @@ function ToolCard({ tool, shifted, reading, done }: { tool: Tool; shifted: boole
       </div>
 
       {/* Mini sheet */}
-      <div className="overflow-hidden rounded-md border border-fg-inverse/10 bg-fg text-fg-inverse" aria-hidden="true">
+      {/* Fixed height with room for all six rows, so the new lines appear inside the box instead
+          of pushing the page down */}
+      <div className="h-[146px] overflow-hidden rounded-md border border-fg-inverse/10 bg-fg text-fg-inverse" aria-hidden="true">
         {rows.map((r, i) => {
           const isHeader = r === "HEADER";
           const isJunk = JUNK.includes(r);
@@ -105,7 +95,7 @@ function ToolCard({ tool, shifted, reading, done }: { tool: Tool; shifted: boole
           return (
             <div
               key={r}
-              className={`animate-row-in flex h-6 items-center gap-2 border-b border-fg-inverse/10 px-2 font-mono text-[10px] outline-2 -outline-offset-2 transition-colors duration-300 last:border-0 ${
+              className={`animate-row-in flex h-6 shrink-0 items-center gap-2 border-b border-fg-inverse/10 px-2 font-mono text-[10px] outline-2 -outline-offset-2 transition-colors duration-300 last:border-0 ${
                 looking ? `outline ${toneRing[tool.tone]}` : "outline-transparent"
               } ${isHeader ? "font-bold" : ""} ${isJunk ? "text-fg-inverse/45" : ""}`}
             >
@@ -121,7 +111,7 @@ function ToolCard({ tool, shifted, reading, done }: { tool: Tool; shifted: boole
       </div>
 
       {/* Status */}
-      <p className={`type-body-sm flex min-h-10 items-start gap-2 text-[13px] ${done ? toneText[tool.tone] : "text-fg-muted"}`}>
+      <p className={`type-body-sm flex h-[3.9rem] items-start gap-2 overflow-hidden text-[13px] leading-[1.3rem] ${done ? toneText[tool.tone] : "text-fg-muted"}`}>
         <StatusIcon tone={done ? tool.tone : null} busy={reading && !done} />
         <span>{done ? tool.result : reading ? tool.working : shifted ? "New export dropped in." : "Ran fine last week."}</span>
       </p>
