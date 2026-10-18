@@ -7,6 +7,7 @@ import { StepExplorer, type ExplorerStep } from "./step-explorer";
 import { BeforeAfterToggle, DropOnRecipe, ReviewSteps, VerifyRun } from "./step-visuals";
 import { ExportFlip } from "./export-flip";
 import { JoinSection } from "../_components/join-section";
+import { PixelField } from "../_components/pixel-field";
 
 export const metadata: Metadata = {
   title: "How it works · Dropdone",
@@ -51,8 +52,9 @@ export default function HowItWorks() {
       <SiteHeader />
       <main>
         {/* Intro */}
-        <section>
-          <div className="mx-auto flex max-w-site flex-col gap-6 px-6 pb-16 pt-36 md:pb-20 md:pt-44">
+        <section className="relative overflow-hidden">
+          <PixelField seed={1} />
+          <div className="relative mx-auto flex max-w-site flex-col gap-6 px-6 pb-16 pt-36 md:pb-20 md:pt-44">
             <h1 className="max-w-[18ch]">
               Show it once. Then just{" "}
               <span className="underline decoration-brand decoration-[3px] underline-offset-[8px]">drop</span>.

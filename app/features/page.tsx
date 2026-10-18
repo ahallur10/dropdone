@@ -15,6 +15,7 @@ import {
 } from "./visuals";
 import { JoinSection } from "../_components/join-section";
 import { CarouselDots } from "../_components/carousel-dots";
+import { PixelField } from "../_components/pixel-field";
 
 export const metadata: Metadata = {
   title: "Features · Dropdone",
@@ -78,8 +79,9 @@ export default function FeaturesPage() {
       <SiteHeader />
       <main>
         {/* Header */}
-        <section>
-          <div className="mx-auto flex max-w-site flex-wrap items-end justify-between gap-8 px-6 pb-12 pt-36 md:pt-44">
+        <section className="relative overflow-hidden">
+          <PixelField seed={2} />
+          <div className="relative mx-auto flex max-w-site flex-wrap items-end justify-between gap-8 px-6 pb-12 pt-36 md:pt-44">
             <div className="flex max-w-[640px] flex-col gap-6">
               <h1>
                 One job, done the way you&apos;d{" "}

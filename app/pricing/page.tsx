@@ -4,6 +4,7 @@ import { SiteFooter } from "../_components/site-footer";
 import { PixelDivider } from "../_components/pixel-divider";
 import { PricingTiers } from "../_components/pricing-tiers";
 import { JoinSection } from "../_components/join-section";
+import { PixelField } from "../_components/pixel-field";
 
 export const metadata: Metadata = {
   title: "Pricing · Dropdone",
@@ -86,8 +87,9 @@ export default function PricingPage() {
       <SiteHeader />
       <main>
         {/* Hero + plans */}
-        <section>
-          <div className="mx-auto flex max-w-site flex-col gap-12 px-6 pb-24 pt-36 md:pb-28 md:pt-44">
+        <section className="relative overflow-hidden">
+          <PixelField seed={4} />
+          <div className="relative mx-auto flex max-w-site flex-col gap-12 px-6 pb-24 pt-36 md:pb-28 md:pt-44">
             <div className="flex max-w-[720px] flex-col gap-6">
               <h1>
                 Free to start. Pro keeps it{" "}

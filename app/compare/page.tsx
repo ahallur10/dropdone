@@ -3,6 +3,7 @@ import { SiteHeader } from "../_components/site-header";
 import { SiteFooter } from "../_components/site-footer";
 import { PixelDivider } from "../_components/pixel-divider";
 import { JoinSection } from "../_components/join-section";
+import { PixelField } from "../_components/pixel-field";
 
 export const metadata: Metadata = {
   title: "Compare · Dropdone",
@@ -106,8 +107,9 @@ export default function ComparePage() {
       <SiteHeader />
       <main>
         {/* Hero */}
-        <section>
-          <div className="mx-auto flex max-w-site flex-col gap-12 px-6 pb-16 pt-36 md:pb-20 md:pt-44">
+        <section className="relative overflow-hidden">
+          <PixelField seed={3} />
+          <div className="relative mx-auto flex max-w-site flex-col gap-12 px-6 pb-16 pt-36 md:pb-20 md:pt-44">
             <div className="flex max-w-[760px] flex-col gap-6">
               <h1>
                 Built for the cleanup you{" "}
