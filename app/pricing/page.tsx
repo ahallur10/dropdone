@@ -76,7 +76,9 @@ const faqs = [
   },
 ];
 
-const GRID = "grid grid-cols-[minmax(200px,1.4fr)_repeat(3,minmax(130px,1fr))]";
+const GRID = "grid grid-cols-[148px_repeat(3,minmax(116px,1fr))] lg:grid-cols-[minmax(200px,1.4fr)_repeat(3,minmax(130px,1fr))]";
+// On narrower screens the table scrolls sideways; the row labels stay pinned on the left.
+const PIN = "max-lg:sticky max-lg:-left-6 max-lg:z-10 max-lg:bg-page max-lg:shadow-[1px_0_0_var(--color-line-subtle)] max-lg:-ml-6 max-lg:pl-6";
 
 export default function PricingPage() {
   return (
@@ -106,9 +108,9 @@ export default function PricingPage() {
           <div className="mx-auto flex max-w-site flex-col gap-10 px-6 py-20 md:py-28">
             <h2 className="max-w-[20ch]">Compare plans.</h2>
             <div className="-mx-6 overflow-x-auto px-6 lg:overflow-visible">
-              <div className="min-w-[720px]" role="table" aria-label="Plan comparison">
+              <div className="min-w-[500px] lg:min-w-[720px]" role="table" aria-label="Plan comparison">
                 <div role="row" className={`${GRID} z-20 border-b border-line bg-page lg:sticky lg:top-20`}>
-                  <span role="columnheader" className="py-4" />
+                  <span role="columnheader" className={`py-4 ${PIN}`} />
                   {plans.map((p) => (
                     <span
                       role="columnheader"
@@ -122,7 +124,7 @@ export default function PricingPage() {
                 {groups.map((g, gi) => (
                   <div key={g.title} role="rowgroup">
                     <div role="row" className={GRID}>
-                      <span role="rowheader" className="type-data pb-2 pt-8 text-[11px] uppercase tracking-[0.08em] text-fg-subtle">
+                      <span role="rowheader" className={`type-data pb-2 pt-8 text-[11px] uppercase tracking-[0.08em] text-fg-subtle ${PIN}`}>
                         {g.title}
                       </span>
                       <span className="bg-transparent" />
@@ -133,7 +135,7 @@ export default function PricingPage() {
                       const lastRow = gi === groups.length - 1 && ri === g.rows.length - 1;
                       return (
                         <div role="row" key={r.label} className={`${GRID} border-b border-line-subtle`}>
-                          <span role="rowheader" className="type-body-sm flex items-center py-4 pr-4 text-fg-soft">
+                          <span role="rowheader" className={`type-body-sm flex items-center py-4 pr-4 text-fg-soft ${PIN}`}>
                             {r.label}
                           </span>
                           {r.values.map((v, i) => (

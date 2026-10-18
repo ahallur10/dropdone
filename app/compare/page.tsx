@@ -96,7 +96,9 @@ const forYou = [
   "Your data has to stay on your organization's computers.",
 ];
 
-const GRID = "grid grid-cols-[minmax(170px,1.05fr)_repeat(4,minmax(150px,1fr))]";
+const GRID = "grid grid-cols-[132px_repeat(4,minmax(140px,1fr))] lg:grid-cols-[minmax(170px,1.05fr)_repeat(4,minmax(150px,1fr))]";
+// On narrower screens the table scrolls sideways; the row labels stay pinned on the left.
+const PIN = "max-lg:sticky max-lg:-left-6 max-lg:z-10 max-lg:bg-page max-lg:shadow-[1px_0_0_var(--color-line-subtle)] max-lg:-ml-6 max-lg:pl-6";
 
 export default function ComparePage() {
   return (
@@ -135,10 +137,10 @@ export default function ComparePage() {
             <h2 className="max-w-[24ch]">How it compares with the tools you already have.</h2>
 
             <div className="-mx-6 overflow-x-auto px-6 lg:overflow-visible">
-              <div className="min-w-[920px]" role="table" aria-label="Dropdone compared with Power Query, Excel macros and Microsoft Copilot">
+              <div className="min-w-[700px] lg:min-w-[920px]" role="table" aria-label="Dropdone compared with Power Query, Excel macros and Microsoft Copilot">
                 {/* Header row stays pinned under the nav while you scroll the comparisons */}
                 <div role="row" className={`${GRID} z-20 border-b border-line bg-page lg:sticky lg:top-20`}>
-                  <span role="columnheader" className="py-4" />
+                  <span role="columnheader" className={`py-4 ${PIN}`} />
                   <span role="columnheader" className="flex items-center justify-center rounded-t-xl bg-brand-a10 px-4 py-4">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/brand/dropdone-lockup.svg" alt="Dropdone" className="h-9 w-auto" />
@@ -152,7 +154,7 @@ export default function ComparePage() {
 
                 {rows.map((r, i) => (
                   <div role="row" key={r.label} className={`${GRID} border-b border-line-subtle last:border-0`}>
-                    <span role="rowheader" className="type-label flex items-center py-5 pr-4 text-fg">
+                    <span role="rowheader" className={`type-label flex items-center py-5 pr-4 text-fg ${PIN}`}>
                       {r.label}
                     </span>
                     <CellView cell={r.dropdone} highlight last={i === rows.length - 1} />
