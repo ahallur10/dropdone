@@ -21,17 +21,13 @@ export function Hero() {
           </p>
           <LegacySystems />
           <div className="flex flex-wrap items-center gap-3">
-            <a className="btn-primary no-underline transition-colors hover:bg-fg-soft max-sm:w-full" href="#join">
-              <DownloadIcon />
-              Download for Mac and Windows
-            </a>
             <a className="btn-primary px-btn no-underline max-sm:w-full" href="#join">
               <PixelLayers />
               Get early access
             </a>
           </div>
           <p className="type-caption flex flex-wrap items-center gap-x-3 gap-y-1 text-fg-muted">
-            <span>Free early access · Your files stay on your computer</span>
+            <span>Coming to Mac and Windows · Free early access · Your files stay on your computer</span>
             <Link href="/how-it-works" className="text-fg-soft underline decoration-line-strong underline-offset-4 hover:text-fg">
               See how it works
             </Link>
@@ -48,19 +44,5 @@ export function Hero() {
         </div>
       </div>
     </section>
-  );
-}
-
-function DownloadIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

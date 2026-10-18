@@ -8,7 +8,7 @@ import { JoinSection } from "../_components/join-section";
 export const metadata: Metadata = {
   title: "Pricing · Dropdone",
   description:
-    "Community is free and open source. Pro is $20 a month: AI for setup included, adjusted refresh when an export changes, and every version of your cleanups saved.",
+    "Community is free and open source. Pro is $20 a month: AI for setup included, suggested fixes when an export changes, and every version of your cleanups saved.",
 };
 
 type Value = string | boolean;
@@ -25,20 +25,20 @@ const groups: { title: string; rows: { label: string; values: [Value, Value, Val
     ],
   },
   {
-    title: "Every week",
+    title: "Every run",
     rows: [
       { label: "Saved cleanups", values: ["Unlimited", "Unlimited", "Unlimited, shared"] },
       { label: "Full workbook or single sheet refresh", values: [true, true, true] },
       { label: "Checks before saving", values: [true, true, true] },
       { label: "Backup before every write", values: [true, true, true] },
-      { label: "Weekly runs on your computer, offline", values: [true, true, true] },
+      { label: "Every run happens on your computer, offline", values: [true, true, true] },
     ],
   },
   {
     title: "When an export changes",
     rows: [
       { label: "Stops safely, saves nothing", values: [true, true, true] },
-      { label: "Adjusted refresh proposes the fix", values: [false, "Up to 5 workbooks", "Unlimited"] },
+      { label: "Suggests the fix for you to approve", values: [false, "Up to 5 workbooks", "Unlimited"] },
       { label: "Version history with one-click undo", values: ["Current version only", true, true] },
     ],
   },
@@ -60,7 +60,7 @@ const faqs = [
   },
   {
     q: "Does my data get sent anywhere?",
-    a: "Weekly runs happen entirely on your computer and work offline. AI is only used during setup, and with Pro's adjusted refresh when an export changes, and nothing is saved until you approve it.",
+    a: "Every run happens on your computer and works offline. AI is only used during setup, when your one example goes to the AI provider you choose to write the steps, and on Pro when an export changes and Dropdone suggests a fix. Nothing is saved until you approve it.",
   },
   {
     q: "What happens when an export changes?",

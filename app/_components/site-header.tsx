@@ -24,16 +24,22 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // The phone menu closes on Escape, and when the window grows into the desktop layout.
+  // The phone menu closes on Escape, a tap outside it, or when the window grows into the desktop layout.
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    // Tapping anywhere outside the header closes it too.
+    const onDown = (e: PointerEvent) => {
+      if (!(e.target as Element).closest("header")) setMenuOpen(false);
+    };
+    window.addEventListener("pointerdown", onDown);
     const wide = window.matchMedia("(min-width: 48rem)");
     const onWide = () => wide.matches && setMenuOpen(false);
     window.addEventListener("keydown", onKey);
     wide.addEventListener("change", onWide);
     return () => {
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onDown);
       wide.removeEventListener("change", onWide);
     };
   }, [menuOpen]);

@@ -250,7 +250,7 @@ export function TeachModal({
             <p className="type-caption mt-0.5">
               {step === "files" && "Clean one export by hand like you always do. Give Dropdone the before and after."}
               {step === "learning" && "Comparing the before and after."}
-              {step === "review" && "Every step in plain English. Approve it, and it runs exactly like this every week."}
+              {step === "review" && "Every step in plain English. Approve it, and it runs exactly like this every time."}
               {step === "saved" && "Saved. Next week, drop the new export on its card."}
             </p>
           </div>
@@ -283,7 +283,7 @@ export function TeachModal({
             <div className="flex items-center justify-between gap-4">
               <p className="type-caption flex items-center gap-1.5">
                 <LockIcon className="size-3.5" />
-                Setup uses AI with your own API key. Weekly runs never use AI.
+                Setup uses AI with your own API key. Runs never use AI.
               </p>
               <button
                 disabled={!messy || !cleaned}

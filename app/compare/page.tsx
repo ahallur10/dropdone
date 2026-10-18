@@ -69,7 +69,7 @@ const rows: { label: string; dropdone: Cell; others: [Cell, Cell, Cell] }[] = [
   },
   {
     label: "Who keeps it working",
-    dropdone: { mark: "yes", text: "No one; re-teach with one example if needed" },
+    dropdone: { mark: "yes", text: "Re-teach with one example if the export changes" },
     others: [
       { mark: "partial", text: "Someone who knows Power Query" },
       { mark: "no", text: "Whoever can still read the VBA" },
@@ -78,7 +78,7 @@ const rows: { label: string; dropdone: Cell; others: [Cell, Cell, Cell] }[] = [
   },
   {
     label: "Data stays on your computer",
-    dropdone: { mark: "yes", text: "Weekly runs, yes" },
+    dropdone: { mark: "yes", text: "Every run, yes" },
     others: [
       { mark: "yes", text: "Yes" },
       { mark: "yes", text: "Yes" },
@@ -113,10 +113,6 @@ export default function ComparePage() {
                 Built for the cleanup you{" "}
                 <span className="underline decoration-brand decoration-[3px] underline-offset-[8px]">repeat</span>.
               </h1>
-              <p className="type-lead text-fg-muted">
-                Dropdone is most useful when the cleanup repeats, you already know what the result should look like,
-                and keeping an automation running is the real burden.
-              </p>
             </div>
             <ol className="grid gap-4 md:grid-cols-3">
               {conditions.map((c) => (

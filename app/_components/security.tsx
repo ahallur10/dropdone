@@ -4,7 +4,7 @@
 
 const spec = [
   { label: "Where cleaning runs", value: "On your computer", note: "Works with the network unplugged." },
-  { label: "Data sent to Dropdone", value: "None", note: "No upload, no cloud copy of your records." },
+  { label: "Data sent to Dropdone", value: "None", note: "No upload to us, no cloud copy of your records." },
   { label: "Source code", value: "Open", note: "Community edition, readable by your IT team." },
   { label: "Installers", value: "Code-signed", note: "Mac and Windows, no security workarounds." },
   { label: "Before every write", value: "Previous version saved", note: "Any change can be undone." },
@@ -82,7 +82,7 @@ function Boundary() {
           <span className="absolute left-1/2 top-1/2 h-px w-3 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-fg-muted" />
           <span className="absolute left-1/2 top-1/2 h-px w-3 -translate-x-1/2 -translate-y-1/2 -rotate-45 bg-fg-muted" />
         </span>
-        <span className="type-caption">Internet: 0 bytes of your data sent</span>
+        <span className="type-caption">Every run: 0 bytes of your data sent. Setup sends your one example to the AI provider you choose.</span>
       </div>
     </figure>
   );

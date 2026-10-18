@@ -87,7 +87,7 @@ export default function FeaturesPage() {
               </h1>
               <p className="type-lead text-fg-muted">
                 No formulas, queries or macros to write. Show Dropdone a report you already cleaned, and it does that
-                same cleanup every week, then checks its work.
+                same cleanup every time, then checks its work.
               </p>
             </div>
           </div>
@@ -156,7 +156,7 @@ export default function FeaturesPage() {
               tone="brand"
               badge={<span className="badge badge-lime self-start">Pro</span>}
               title="When an export changes, Pro proposes the fix"
-              body="Community stops safely and you teach it again. Pro's adjusted refresh suggests the change, and nothing is saved until you approve."
+              body="Community stops safely and you teach it again. Pro suggests the change, and nothing is saved until you approve."
               visual={<ProFixVisual />}
             />
           </div>
