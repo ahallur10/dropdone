@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// Pricing lives on the homepage; the rest are their own pages.
+// Every tab is its own page; the homepage also has short versions of each.
 const links = [
   { href: "/how-it-works", label: "How it works" },
   { href: "/features", label: "Features" },
   { href: "/compare", label: "Compare" },
-  { href: "/#pricing", label: "Pricing" },
+  { href: "/pricing", label: "Pricing" },
 ];
 
 const SCROLL_THRESHOLD = 24;
