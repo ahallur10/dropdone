@@ -52,15 +52,19 @@ function Tile({
   return (
     <article
       className={`flex flex-col overflow-hidden rounded-2xl border ${toneClass[tone]} ${spanClass} ${
-        tall ? "min-h-[520px]" : "min-h-[440px]"
+        // The minimum heights only matter for lining up the desktop grid; phones size to content.
+        tall ? "md:min-h-[520px]" : "md:min-h-[440px]"
       }`}
     >
-      <div className="flex flex-col gap-2 p-7 pb-0">
+      <div className="flex flex-col gap-2 p-6 pb-0 md:p-7 md:pb-0">
         {badge}
         <h2 className="type-h4">{title}</h2>
         <p className="type-body-sm max-w-[46ch]">{body}</p>
       </div>
-      <div className="flex flex-1 items-center justify-center px-6 py-8">{visual}</div>
+      <div className="flex flex-1 items-center justify-center px-4 py-6 md:px-6 md:py-8">
+        {/* A touch smaller on phones so each card takes less of the screen */}
+        <div className="flex w-full justify-center max-sm:[zoom:0.88]">{visual}</div>
+      </div>
     </article>
   );
 }
