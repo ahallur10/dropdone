@@ -1,54 +1,53 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type DragEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   account,
   activity as baseActivity,
   initialQueue,
-  reviewQuestion,
+  recipes as initialRecipes,
   stageFor,
-  watchedFolders,
-  workbooks as initialWorkbooks,
+  warning,
   type ActivityEntry,
   type Item,
-  type Workbook,
+  type Recipe,
 } from "./data";
 import {
   ActivityIcon,
-  CloudFolderIcon,
-  FolderIcon,
   HelpIcon,
   HomeIcon,
   LockIcon,
   QueueIcon,
   SearchIcon,
-  ServerIcon,
   SettingsIcon,
   SidebarIcon,
-  UploadIcon,
   WorkbookIcon,
 } from "./icons";
 import { AccountView } from "./views/account";
 import { ActivityView } from "./views/activity";
 import { HomeView } from "./views/home";
 import { QueueView } from "./views/queue";
-import { SettingsView, type Folder } from "./views/settings";
-import { TeachModal, WorkbooksView } from "./views/workbooks";
+import { RecipesView, TeachModal } from "./views/recipes";
+import { SettingsView } from "./views/settings";
 
-type View = "home" | "queue" | "workbooks" | "activity" | "settings" | "account";
+type View = "home" | "queue" | "recipes" | "activity" | "settings" | "account";
 
 const TICK_MS = 450;
+
+// Example export file names for a recipe that's run without dropping a real file.
+const nextExport: Record<string, string> = {
+  "client-services": "Client_Services_0323.xlsx",
+  caseload: "CASE_EXPORT_0323.csv",
+  "ap-detail": "check_register_mar.xlsx",
+  deposits: "CORE_GL_DUMP_0323.txt",
+};
 
 export function MockApp() {
   const [view, setView] = useState<View>("home");
   const [items, setItems] = useState<Item[]>(initialQueue);
-  const [books, setBooks] = useState<Workbook[]>(initialWorkbooks);
-  const [folders, setFolders] = useState<Folder[]>(watchedFolders);
+  const [recipes, setRecipes] = useState<Recipe[]>(initialRecipes);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [teaching, setTeaching] = useState(false);
-  const [dragging, setDragging] = useState(false);
-  const dragDepth = useRef(0);
-  const fileInput = useRef<HTMLInputElement>(null);
+  const [teaching, setTeaching] = useState<{ reteachId?: string } | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
 
   // Advance every running item a little each tick so the queue feels live.
@@ -57,8 +56,10 @@ export function MockApp() {
       setItems((prev) =>
         prev.map((it) => {
           if (it.progress >= 100 || it.paused || it.held) return it;
+          if (it.stopped && it.progress >= (it.stopAt ?? 0)) return it;
           if (it.startDelay && it.startDelay > 0) return { ...it, startDelay: it.startDelay - 1 };
-          const next = Math.min(100, it.progress + 1 + Math.floor(Math.random() * 3));
+          let next = Math.min(100, it.progress + 1 + Math.floor(Math.random() * 3));
+          if (it.stopped && it.stopAt !== undefined) next = Math.min(next, it.stopAt);
           if (it.pauseAt && !it.answered && next >= it.pauseAt) {
             return { ...it, progress: it.pauseAt, paused: true };
           }
@@ -71,8 +72,7 @@ export function MockApp() {
 
   const reset = useCallback(() => {
     setItems(initialQueue);
-    setBooks(initialWorkbooks);
-    setFolders(watchedFolders);
+    setRecipes(initialRecipes);
   }, []);
 
   // Recording helpers: R restarts everything, [ toggles the sidebar.
@@ -86,31 +86,42 @@ export function MockApp() {
     return () => window.removeEventListener("keydown", onKey);
   }, [reset]);
 
+  // Files are dropped on recipe cards. Swallow drops anywhere else so the browser doesn't open them.
+  useEffect(() => {
+    const stop = (e: DragEvent) => e.preventDefault();
+    window.addEventListener("dragover", stop);
+    window.addEventListener("drop", stop);
+    return () => {
+      window.removeEventListener("dragover", stop);
+      window.removeEventListener("drop", stop);
+    };
+  }, []);
+
   function go(v: View) {
     setView(v);
     scroller.current?.scrollTo({ top: 0 });
   }
 
-  function addFiles(names: string[]) {
-    const added: Item[] = names.map((name, i) => ({
-      id: `${name}-${Date.now()}-${i}`,
-      file: name,
-      folder: "~/Downloads",
-      meta: "Just dropped",
-      ...guessWorkbook(name),
-      progress: 0,
-      startDelay: 2 + i * 2,
-    }));
-    setItems((prev) => [...added, ...prev]);
+  function run(recipeId: string, fileName?: string) {
+    setItems((prev) => [
+      {
+        id: `${recipeId}-${Date.now()}`,
+        recipeId,
+        file: fileName ?? nextExport[recipeId] ?? "export.xlsx",
+        folder: "~/Downloads",
+        meta: "Just dropped",
+        progress: 0,
+        startDelay: 2,
+      },
+      ...prev,
+    ]);
     if (view !== "queue") go("home");
   }
 
-  const answer = () =>
-    setItems((prev) =>
-      prev.map((it) => (it.id === reviewQuestion.itemId ? { ...it, paused: false, answered: true } : it)),
-    );
-  const toggleHold = (id: string) =>
-    setItems((prev) => prev.map((it) => (it.id === id ? { ...it, held: !it.held } : it)));
+  const looksRight = () =>
+    setItems((prev) => prev.map((it) => (it.id === warning.itemId ? { ...it, paused: false, answered: true } : it)));
+  const discard = () => setItems((prev) => prev.filter((it) => it.id !== warning.itemId));
+  const toggleHold = (id: string) => setItems((prev) => prev.map((it) => (it.id === id ? { ...it, held: !it.held } : it)));
   const remove = (id: string) => setItems((prev) => prev.filter((it) => it.id !== id));
   const moveTop = (id: string) =>
     setItems((prev) => {
@@ -119,110 +130,95 @@ export function MockApp() {
     });
   const clearDone = () => setItems((prev) => prev.filter((it) => it.progress < 100));
 
-  const staged = items.map((it) => ({ ...it, stage: stageFor(it.progress, !!it.paused, !!it.held) }));
-  const queueCount = staged.filter((i) => i.stage !== "done").length;
-  const needsYou = staged.some((i) => i.stage === "review");
+  function saveRecipe(r: Recipe) {
+    // Teaching a report that already has a recipe updates it instead of adding a duplicate.
+    setRecipes((prev) => {
+      const existing = prev.find((x) => x.id === r.id || x.name === r.name);
+      return existing ? prev.map((x) => (x === existing ? { ...r, id: existing.id } : x)) : [r, ...prev];
+    });
+    // Re-teaching a recipe whose export changed re-runs that export with the new steps.
+    if (teaching?.reteachId) {
+      setItems((prev) =>
+        prev.map((it) =>
+          it.recipeId === r.id && it.stopped ? { ...it, stopped: false, progress: 0, startDelay: 3 } : it,
+        ),
+      );
+    }
+  }
 
-  // Files that finished in this session show up at the top of Activity.
+  const staged = items.map((it) => ({ ...it, stage: stageFor(it) }));
+  const queueCount = staged.filter((i) => i.stage !== "done").length;
+  const needsYou = staged.some((i) => i.stage === "review" || i.stage === "stopped");
+
+  // Runs that finished in this session show up at the top of Activity.
   const liveActivity: ActivityEntry[] = staged
     .filter((i) => i.finishedAgo === "just now")
-    .map((i) => ({
-      id: `live-${i.id}`,
-      day: "Today",
-      time: "Just now",
-      kind: "updated",
-      title: `Updated ${i.workbook}`,
-      detail: `From ${i.file} · ${i.meta}`,
-      canRestore: true,
-    }));
-
-  const dragHandlers = {
-    onDragEnter: (e: DragEvent) => {
-      e.preventDefault();
-      if (teaching) return;
-      dragDepth.current += 1;
-      setDragging(true);
-    },
-    onDragOver: (e: DragEvent) => e.preventDefault(),
-    onDragLeave: () => {
-      dragDepth.current -= 1;
-      if (dragDepth.current <= 0) setDragging(false);
-    },
-    onDropCapture: () => {
-      dragDepth.current = 0;
-      setDragging(false);
-    },
-    onDrop: (e: DragEvent) => {
-      e.preventDefault();
-      if (teaching) return;
-      const names = Array.from(e.dataTransfer.files).map((f) => f.name);
-      if (names.length) addFiles(names);
-    },
-  };
+    .map((i) => {
+      const r = recipes.find((x) => x.id === i.recipeId);
+      return {
+        id: `live-${i.id}`,
+        day: "Today",
+        time: "Just now",
+        kind: "updated",
+        title: `Updated ${r?.workbook ?? "workbook"}`,
+        detail: `From ${i.file} · ${r?.name ?? ""}`,
+        canRestore: true,
+      };
+    });
 
   let content: ReactNode;
   switch (view) {
     case "home":
-      content = <HomeView items={staged} onAnswer={answer} />;
+      content = (
+        <HomeView
+          items={staged}
+          recipes={recipes}
+          onRun={run}
+          onLooksRight={looksRight}
+          onDiscard={discard}
+          onReteach={(id) => setTeaching({ reteachId: id })}
+        />
+      );
       break;
     case "queue":
       content = (
         <QueueView
           items={staged}
+          recipes={recipes}
           onToggleHold={toggleHold}
           onRemove={remove}
           onTop={moveTop}
-          onAnswer={answer}
+          onOpenHome={() => go("home")}
           onClearDone={clearDone}
           doneCount={staged.length - queueCount}
         />
       );
       break;
-    case "workbooks":
+    case "recipes":
       content = (
-        <WorkbooksView
-          workbooks={books}
-          onTeach={() => setTeaching(true)}
-          onChangeMode={(id, mode) => setBooks((b) => b.map((w) => (w.id === id ? { ...w, mode } : w)))}
-          onForget={(id) => setBooks((b) => b.filter((w) => w.id !== id))}
+        <RecipesView
+          recipes={recipes}
+          onTeach={(id) => setTeaching({ reteachId: id })}
+          onChangeMode={(id, mode) => setRecipes((rs) => rs.map((r) => (r.id === id ? { ...r, mode } : r)))}
+          onDelete={(id) => setRecipes((rs) => rs.filter((r) => r.id !== id))}
         />
       );
       break;
     case "activity":
-      content = (
-        <ActivityView
-          entries={[...liveActivity, ...baseActivity]}
-          onTeach={() => {
-            go("workbooks");
-            setTeaching(true);
-          }}
-          onOpenHome={() => go("home")}
-        />
-      );
+      content = <ActivityView entries={[...liveActivity, ...baseActivity]} onOpenHome={() => go("home")} />;
       break;
     case "settings":
-      content = (
-        <SettingsView
-          folders={folders}
-          onRemoveFolder={(name) => setFolders((f) => f.filter((x) => x.name !== name))}
-          onAddFolder={() =>
-            setFolders((f) => (f.some((x) => x.name === "Desktop/Exports") ? f : [...f, { name: "Desktop/Exports", kind: "local" }]))
-          }
-        />
-      );
+      content = <SettingsView />;
       break;
     case "account":
-      content = <AccountView workbookCount={books.length} />;
+      content = <AccountView recipeCount={recipes.length} />;
       break;
   }
 
   return (
     <div className="flex h-dvh w-full bg-header xl:p-6">
       {/* App window */}
-      <div
-        {...dragHandlers}
-        className="relative flex h-full w-full min-w-[1024px] flex-col overflow-hidden border-line bg-page xl:rounded-xl xl:border"
-      >
+      <div className="relative flex h-full w-full min-w-[1024px] flex-col overflow-hidden border-line bg-page xl:rounded-xl xl:border">
         <TitleBar />
 
         <div className="relative flex min-h-0 flex-1">
@@ -233,8 +229,7 @@ export function MockApp() {
             onToggle={() => setSidebarOpen((o) => !o)}
             queueCount={queueCount}
             needsYou={needsYou}
-            workbookCount={books.length}
-            folders={folders}
+            recipeCount={recipes.length}
           />
 
           <main className="relative flex min-w-0 flex-1 flex-col">
@@ -243,25 +238,15 @@ export function MockApp() {
               <label className="flex h-9 w-80 items-center gap-2 rounded-md border border-line bg-surface px-3 text-fg-subtle focus-within:border-brand">
                 <SearchIcon />
                 <input
-                  placeholder="Search files and workbooks"
+                  placeholder="Search recipes and runs"
                   className="type-body-sm w-full bg-transparent text-fg-soft outline-none placeholder:text-fg-subtle"
                 />
                 <kbd className="type-data rounded-sm border border-line px-1.5 text-[11px] text-fg-subtle">⌘K</kbd>
               </label>
-              <button onClick={() => fileInput.current?.click()} className="btn-brand min-h-9 cursor-pointer px-3.5 text-sm">
-                <UploadIcon />
-                Drop an export
+              <button onClick={() => setTeaching({})} className="btn-brand min-h-9 cursor-pointer px-3.5 text-sm">
+                <span aria-hidden="true" className="text-lg leading-none">+</span>
+                New recipe
               </button>
-              <input
-                ref={fileInput}
-                type="file"
-                multiple
-                hidden
-                onChange={(e) => {
-                  addFiles(Array.from(e.target.files ?? []).map((f) => f.name));
-                  e.target.value = "";
-                }}
-              />
             </div>
 
             {/* Content */}
@@ -269,31 +254,16 @@ export function MockApp() {
               <div className="mx-auto flex max-w-[1180px] flex-col gap-5 px-8 py-6">{content}</div>
             </div>
 
-            <StatusBar folders={folders.length} workbooks={books.length} />
+            <StatusBar recipes={recipes.length} />
           </main>
         </div>
 
         {teaching && (
           <TeachModal
-            onClose={() => setTeaching(false)}
-            onSave={(w) => {
-              setBooks((b) => [w, ...b]);
-              setTeaching(false);
-              go("workbooks");
-            }}
+            reteach={recipes.find((r) => r.id === teaching.reteachId)}
+            onClose={() => setTeaching(null)}
+            onSave={saveRecipe}
           />
-        )}
-
-        {dragging && !teaching && (
-          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-page/80 backdrop-blur-sm">
-            <div className="flex flex-col items-center gap-4 rounded-xl border-2 border-dashed border-brand px-16 py-12">
-              <span className="flex size-14 items-center justify-center rounded-lg bg-brand-a24 text-brand">
-                <UploadIcon className="size-7" />
-              </span>
-              <p className="type-h4">Drop to clean</p>
-              <p className="type-body-sm">Dropdone will match it to one of your workbooks.</p>
-            </div>
-          </div>
         )}
       </div>
     </div>
@@ -314,7 +284,7 @@ function TitleBar() {
       <p className="type-caption absolute left-1/2 -translate-x-1/2 text-fg-muted">Dropdone</p>
       <p className="type-caption ml-auto flex items-center gap-1.5 text-fg-subtle">
         <LockIcon className="size-3.5" />
-        Everything stays on this Mac
+        Everything stays on this computer
       </p>
     </div>
   );
@@ -327,8 +297,7 @@ function Sidebar({
   onToggle,
   queueCount,
   needsYou,
-  workbookCount,
-  folders,
+  recipeCount,
 }: {
   open: boolean;
   view: View;
@@ -336,11 +305,8 @@ function Sidebar({
   onToggle: () => void;
   queueCount: number;
   needsYou: boolean;
-  workbookCount: number;
-  folders: Folder[];
+  recipeCount: number;
 }) {
-  const folderIcon = { local: FolderIcon, cloud: CloudFolderIcon, server: ServerIcon };
-
   return (
     <aside
       className={`flex shrink-0 flex-col border-r border-line-subtle bg-section transition-[width] duration-200 ease-out ${
@@ -370,26 +336,9 @@ function Sidebar({
       <nav className="flex flex-col gap-0.5 px-3 pt-2">
         <NavItem open={open} icon={<HomeIcon />} label="Home" active={view === "home"} onClick={() => onNavigate("home")} dot={needsYou} />
         <NavItem open={open} icon={<QueueIcon />} label="My queue" badge={queueCount} active={view === "queue"} onClick={() => onNavigate("queue")} />
-        <NavItem open={open} icon={<WorkbookIcon />} label="Workbooks" badge={workbookCount} subtle active={view === "workbooks"} onClick={() => onNavigate("workbooks")} />
+        <NavItem open={open} icon={<WorkbookIcon />} label="Recipes" badge={recipeCount} subtle active={view === "recipes"} onClick={() => onNavigate("recipes")} />
         <NavItem open={open} icon={<ActivityIcon />} label="Activity" active={view === "activity"} onClick={() => onNavigate("activity")} />
       </nav>
-
-      <div className="mt-6 flex flex-col gap-0.5 px-3">
-        {open && <p className="type-eyebrow px-2.5 pb-2 text-[11px] text-fg-subtle">Watched folders</p>}
-        {folders.map((f) => {
-          const Icon = folderIcon[f.kind];
-          return (
-            <NavItem
-              key={f.name}
-              open={open}
-              icon={<Icon />}
-              label={f.name}
-              onClick={() => onNavigate("settings")}
-              trailing={<span className="size-1.5 rounded-full bg-success" title="Watching" />}
-            />
-          );
-        })}
-      </div>
 
       <div className="mt-auto flex flex-col gap-0.5 border-t border-line-subtle px-3 py-3">
         <NavItem open={open} icon={<HelpIcon />} label="Help" onClick={() => {}} />
@@ -424,7 +373,6 @@ function NavItem({
   badge,
   subtle,
   dot,
-  trailing,
   onClick,
 }: {
   open: boolean;
@@ -434,7 +382,6 @@ function NavItem({
   badge?: number;
   subtle?: boolean;
   dot?: boolean;
-  trailing?: ReactNode;
   onClick: () => void;
 }) {
   const showBadge = badge !== undefined && badge > 0;
@@ -450,13 +397,12 @@ function NavItem({
       {active && <span className="absolute -left-3 top-2 h-5 w-[3px] rounded-r-sm bg-brand" />}
       <span className={active ? "text-brand" : ""}>{icon}</span>
       {open && <span className="type-label flex-1 truncate text-sm">{label}</span>}
-      {open && dot && <span className="size-2 rounded-full bg-warning" title="Needs your answer" />}
+      {open && dot && <span className="size-2 rounded-full bg-warning" title="Needs you" />}
       {open && showBadge && (
         <span className={`type-data rounded-sm px-1.5 text-[11px] ${subtle ? "text-fg-subtle" : "bg-brand-a24 text-brand"}`}>
           {badge}
         </span>
       )}
-      {open && trailing}
       {!open && ((showBadge && !subtle) || dot) && (
         <span className={`absolute right-1.5 top-1.5 size-2 rounded-full ${dot ? "bg-warning" : "bg-brand"}`} />
       )}
@@ -464,28 +410,15 @@ function NavItem({
   );
 }
 
-function StatusBar({ folders, workbooks }: { folders: number; workbooks: number }) {
+function StatusBar({ recipes }: { recipes: number }) {
   return (
     <div className="flex h-8 shrink-0 items-center gap-4 border-t border-line-subtle bg-header px-5">
       <span className="type-caption flex items-center gap-1.5">
         <span className="size-1.5 rounded-full bg-success" />
-        Watching {folders} {folders === 1 ? "folder" : "folders"}
+        {recipes} recipes ready
       </span>
-      <span className="type-caption">{workbooks} workbooks learned</span>
+      <span className="type-caption">Weekly runs use no AI</span>
       <span className="type-caption ml-auto">Dropdone {account.version} · Early access</span>
     </div>
   );
-}
-
-function guessWorkbook(name: string) {
-  const n = name.toLowerCase();
-  if (/roster|sss|trio|apr/.test(n))
-    return { workbook: "SSS_APR_2024-25_upload.xlsx", workbookFolder: "OneDrive – ASU › TRIO › APR", sheet: "Participants" };
-  if (/check|register|ap_|vendor/.test(n))
-    return { workbook: "Board Packet – AP Detail.xlsx", workbookFolder: "Finance › Board › Oct", sheet: "AP Detail" };
-  if (/gl|deposit|ledger/.test(n))
-    return { workbook: "Daily Deposit Recon.xlsx", workbookFolder: "Finance › Recon › FY27", sheet: "Detail" };
-  if (/inv|stock|count/.test(n))
-    return { workbook: "Inventory Weekly.xlsx", workbookFolder: "Ops › Inventory", sheet: "Week 42" };
-  return { workbook: "Weekly Caseload.xlsx", workbookFolder: "HSD-Share › Reports › 2026", sheet: "Caseload" };
 }

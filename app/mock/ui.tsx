@@ -102,20 +102,20 @@ export function statusDetail(item: StagedItem) {
     case "done":
       return `Saved ${item.finishedAgo ?? "just now"}`;
     case "review":
-      return "Paused before saving";
+      return "Nothing saved yet";
+    case "stopped":
+      return "Export changed";
     case "held":
       return `Stopped at ${item.progress}%`;
     case "queued":
       return "Waiting for the files ahead";
     default:
-      return `${item.progress}% · step ${steps[item.stage] ?? 0} of 4`;
+      return `${item.progress}%`;
   }
 }
 
-const steps: Partial<Record<Stage, number>> = { reading: 1, matching: 2, cleaning: 3, checking: 4 };
-
 export function StatusCell({ item }: { item: StagedItem }) {
-  const running = !["done", "review", "queued", "held"].includes(item.stage);
+  const running = !["done", "review", "queued", "held", "stopped"].includes(item.stage);
   return (
     <div className="flex items-center justify-end gap-3.5">
       <div className="min-w-0 text-right">
@@ -123,6 +123,8 @@ export function StatusCell({ item }: { item: StagedItem }) {
           className={`type-label truncate text-[13px] ${
             item.stage === "review"
               ? "text-warning"
+              : item.stage === "stopped"
+                ? "text-danger"
               : item.stage === "done"
                 ? "text-fg"
                 : running
@@ -145,7 +147,13 @@ export function Donut({ stage, progress, size = 40 }: { stage: Stage; progress: 
   const c = 2 * Math.PI * r;
   const pct = stage === "queued" ? 0 : progress;
   const color =
-    stage === "review" ? "var(--color-warning)" : stage === "held" ? "var(--color-fg-muted)" : "var(--color-brand)";
+    stage === "review"
+      ? "var(--color-warning)"
+      : stage === "stopped"
+        ? "var(--color-danger)"
+        : stage === "held"
+          ? "var(--color-fg-muted)"
+          : "var(--color-brand)";
 
   return (
     <div
@@ -183,7 +191,9 @@ export function Donut({ stage, progress, size = 40 }: { stage: Stage; progress: 
             <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         ) : stage === "review" ? (
-          <span className="type-label text-[14px] leading-none text-warning">?</span>
+          <span className="type-label text-[14px] leading-none text-warning">!</span>
+        ) : stage === "stopped" ? (
+          <span className="h-[3px] w-2.5 rounded-pill bg-danger" />
         ) : stage === "held" ? (
           <span className="flex gap-[3px]">
             <span className="h-2.5 w-[3px] rounded-[1px] bg-fg-muted" />
@@ -267,4 +277,52 @@ export function ProBadge() {
 
 export function EmptyState({ children }: { children: ReactNode }) {
   return <p className="type-body-sm px-5 py-10 text-center">{children}</p>;
+}
+
+export function Drawer({
+  title,
+  subtitle,
+  onClose,
+  children,
+  footer,
+}: {
+  title: string;
+  subtitle?: string;
+  onClose: () => void;
+  children: ReactNode;
+  footer?: ReactNode;
+}) {
+  return (
+    <div className="absolute inset-0 z-30 flex justify-end" onClick={onClose}>
+      <div className="absolute inset-0 bg-page/60" />
+      <aside
+        onClick={(e) => e.stopPropagation()}
+        className="relative flex h-full w-[500px] flex-col border-l border-line bg-section"
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-line-subtle px-6 py-5">
+          <div className="min-w-0">
+            <p className="type-label truncate text-fg">{title}</p>
+            {subtitle && <p className="type-caption mt-1 truncate">{subtitle}</p>}
+          </div>
+          <button onClick={onClose} className={btnQuiet}>
+            Close
+          </button>
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col gap-7 overflow-y-auto px-6 py-6">{children}</div>
+        {footer && <div className="flex items-center justify-between gap-3 border-t border-line-subtle px-6 py-4">{footer}</div>}
+      </aside>
+    </div>
+  );
+}
+
+export function Label({ children }: { children: ReactNode }) {
+  return <p className="type-data text-[11px] uppercase tracking-[0.08em] text-fg-subtle">{children}</p>;
+}
+
+export function CheckIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
+      <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 }

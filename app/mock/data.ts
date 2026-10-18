@@ -1,297 +1,303 @@
-// Sample queue for the desktop app mock. All files, paths and people are made up.
+// Sample data for the desktop app mock. All files, people and numbers are made up.
+// Product behavior follows HOW-IT-WORKS.md: learn from a before/after pair, run approved
+// steps exactly as written (no AI in weekly runs), check before saving, stop when unsure.
 
-export type Stage = "queued" | "reading" | "matching" | "cleaning" | "checking" | "review" | "held" | "done";
+/* ---------- Run stages ---------- */
+
+// Stage keys are shared with the homepage animation and feature cards; only labels changed.
+export type Stage =
+  | "queued"
+  | "reading"
+  | "matching"
+  | "cleaning"
+  | "checking"
+  | "review"
+  | "stopped"
+  | "held"
+  | "done";
 
 export const stageLabel: Record<Stage, string> = {
   queued: "Queued",
   reading: "Reading export",
-  matching: "Matching columns",
-  cleaning: "Cleaning rows",
+  matching: "Running steps",
+  cleaning: "Running steps",
   checking: "Checking against workbook",
-  review: "Needs your answer",
+  review: "Needs your OK",
+  stopped: "Stopped, nothing saved",
   held: "Paused by you",
   done: "Workbook updated",
 };
 
-// Progress thresholds for each running stage (0 to 100).
-export function stageFor(progress: number, paused: boolean, held = false): Stage {
-  if (paused) return "review";
-  if (held && progress < 100) return "held";
-  if (progress >= 100) return "done";
-  if (progress >= 80) return "checking";
-  if (progress >= 50) return "cleaning";
-  if (progress >= 22) return "matching";
-  if (progress > 0) return "reading";
+export function stageFor(item: Item): Stage {
+  if (item.stopped && item.progress >= (item.stopAt ?? 0)) return "stopped";
+  if (item.paused) return "review";
+  if (item.held && item.progress < 100) return "held";
+  if (item.progress >= 100) return "done";
+  if (item.progress >= 80) return "checking";
+  if (item.progress >= 50) return "cleaning";
+  if (item.progress >= 22) return "matching";
+  if (item.progress > 0) return "reading";
   return "queued";
 }
 
-export type QueueItem = {
-  id: string;
-  file: string;
-  folder: string;
-  meta: string;
-  workbook: string;
-  workbookFolder: string;
-  sheet: string;
-  progress: number;
-  /** Progress at which the item stops and asks a question. */
-  pauseAt?: number;
-  /** Ticks to wait before starting, so the queue staggers. */
-  startDelay?: number;
-  finishedAgo?: string;
+/* ---------- Recipes (one per report) ---------- */
+
+export type RefreshMode = "workbook" | "sheet";
+
+export const refreshModeLabel: Record<RefreshMode, string> = {
+  workbook: "Full workbook",
+  sheet: "Single sheet",
 };
 
-export const initialQueue: QueueItem[] = [
+export type Recipe = {
+  id: string;
+  name: string;
+  workbook: string;
+  folder: string;
+  sheet: string;
+  mode: RefreshMode;
+  learnedFrom: { messy: string; cleaned: string };
+  learnedOn: string;
+  lastRun: string;
+  runs: number;
+  steps: string[];
+};
+
+export const clientServicesSteps = [
+  'Remove everything above the row that starts with "CLNT_ID"',
+  "Remove empty columns",
+  'Remove "Page _ of _" lines, "Confidential" lines, and repeated header rows',
+  "Rename columns: CLNT_ID to Client ID, CLNT_NM to Client Name, STAT to Status, SVC_DT to Service Date, AMT to Amount",
+  "Trim extra spaces and change Client Name to First Last, in title case",
+  "Format Service Date as YYYY-MM-DD",
+  "Turn Amount into a plain number",
+  "Remove rows where Status is Withdrawn",
+];
+
+export const recipes: Recipe[] = [
   {
-    id: "trio",
-    file: "SSS_Active_Roster_AY2425.xlsx",
-    folder: "~/Downloads",
-    meta: "214 rows · 48 KB",
-    workbook: "SSS_APR_2024-25_upload.xlsx",
-    workbookFolder: "OneDrive – ASU › TRIO › APR",
-    sheet: "Participants",
-    progress: 58,
-    pauseAt: 86,
+    id: "client-services",
+    name: "Weekly Client Services Report",
+    workbook: "Client Services.xlsx",
+    folder: "HSD-Share › Reports › 2026",
+    sheet: "Data",
+    mode: "sheet",
+    learnedFrom: { messy: "Client_Services_0302.xlsx", cleaned: "Client Services.xlsx" },
+    learnedOn: "Mar 2",
+    lastRun: "Mar 9, 8:20 AM",
+    runs: 2,
+    steps: clientServicesSteps,
   },
   {
     id: "caseload",
-    file: "CASE_EXPORT_20261016.csv",
-    folder: "~/Downloads",
-    meta: "1,382 rows · 211 KB",
+    name: "Weekly Caseload",
     workbook: "Weekly Caseload.xlsx",
-    workbookFolder: "HSD-Share › Reports › 2026",
+    folder: "HSD-Share › Reports › 2026",
     sheet: "Caseload",
-    progress: 24,
+    mode: "workbook",
+    learnedFrom: { messy: "CASE_EXPORT_0105.csv", cleaned: "Weekly Caseload.xlsx" },
+    learnedOn: "Jan 5",
+    lastRun: "Mar 9, 8:31 AM",
+    runs: 10,
+    steps: [
+      "Remove the report title and run date rows",
+      'Remove "*** PAGE _ ***" lines',
+      "Strip leading zeros and spaces from CASE_ID",
+      "Change CLIENT NM to First Last, in title case",
+      "Format OPEN_DT as YYYY-MM-DD",
+      "Rename columns to Case ID, Client, Opened, Program, Caseworker",
+    ],
   },
   {
-    id: "advising",
-    file: "advising_log_oct (2).csv",
-    folder: "~/Downloads",
-    meta: "96 rows · 14 KB",
-    workbook: "Advising Hours Tracker.xlsx",
-    workbookFolder: "OneDrive – ASU › TRIO › Tracking",
-    sheet: "October",
-    progress: 0,
-    startDelay: 6,
-  },
-  {
-    id: "gl",
-    file: "CORE_GL_DUMP_101626.txt",
-    folder: "~/Desktop/Exports",
-    meta: "3,497 rows · 402 KB",
-    workbook: "Daily Deposit Recon.xlsx",
-    workbookFolder: "Finance › Recon › FY27",
-    sheet: "Detail",
-    progress: 0,
-    startDelay: 14,
-  },
-  {
-    id: "register",
-    file: "check_register_sept_26.xlsx",
-    folder: "~/Desktop/Exports",
-    meta: "1,723 line items · 126 KB",
+    id: "ap-detail",
+    name: "Monthly AP Check Register",
     workbook: "Board Packet – AP Detail.xlsx",
-    workbookFolder: "Finance › Board › Oct",
+    folder: "Finance › Board › 2026",
     sheet: "AP Detail",
-    progress: 100,
-    finishedAgo: "2 min ago",
+    mode: "sheet",
+    learnedFrom: { messy: "check_register_jan.xlsx", cleaned: "Board Packet – AP Detail.xlsx" },
+    learnedOn: "Feb 3",
+    lastRun: "Mar 3, 9:12 AM",
+    runs: 2,
+    steps: [
+      "Merge the two header rows into one",
+      "Join wrapped descriptions back onto their line",
+      "Split Account Number into Fund, Function, Object and Org",
+      'Remove the "TOTAL:" row',
+      "Turn Amount into a plain number",
+    ],
   },
   {
-    id: "inventory",
-    file: "INV_COUNT_W42.csv",
-    folder: "~/Downloads",
-    meta: "640 rows · 58 KB",
-    workbook: "Inventory Weekly.xlsx",
-    workbookFolder: "Ops › Inventory",
-    sheet: "Week 42",
-    progress: 100,
-    finishedAgo: "1 hr ago",
+    id: "deposits",
+    name: "Daily Deposit Recon",
+    workbook: "Daily Deposit Recon.xlsx",
+    folder: "Finance › Recon › FY26",
+    sheet: "Detail",
+    mode: "workbook",
+    learnedFrom: { messy: "CORE_GL_DUMP_0227.txt", cleaned: "Daily Deposit Recon.xlsx" },
+    learnedOn: "Feb 27",
+    lastRun: "Mar 9, 4:55 PM",
+    runs: 7,
+    steps: [
+      'Remove "** SUBTOTAL **" rows',
+      "Turn (310.00) into a 310.00 credit",
+      "Format POST DATE as YYYY-MM-DD",
+      "Rename columns to Account, Description, Debit, Credit, Posted",
+    ],
   },
 ];
 
-export const watchedFolders = [
-  { name: "Downloads", kind: "local" as const },
-  { name: "OneDrive – ASU", kind: "cloud" as const },
-  { name: "HSD-Share", kind: "server" as const },
-];
+/* ---------- Run queue ---------- */
 
-export const reviewQuestion = {
-  itemId: "trio",
-  title: "Ana Martinez has N/A for GPA",
-  body: "She's a first-term student. In last year's file, first-term students had a blank GPA. Do the same here?",
-  options: ["Leave it blank", "I'll fill it in"],
+export type QueueItem = {
+  id: string;
+  recipeId: string;
+  file: string;
+  folder: string;
+  meta: string;
+  progress: number;
+  /** Ticks to wait before starting, so the queue staggers. */
+  startDelay?: number;
+  /** Progress at which the run pauses on an unusual result (warning F). */
+  pauseAt?: number;
+  /** The export's columns changed: the run stops at this point and saves nothing. */
+  stopped?: boolean;
+  stopAt?: number;
+  finishedAgo?: string;
 };
 
 export type Item = QueueItem & { paused?: boolean; answered?: boolean; held?: boolean };
 export type StagedItem = Item & { stage: Stage };
 
-/* ---------- Workbooks Dropdone has learned ---------- */
-
-export type RefreshMode = "workbook" | "sheet" | "adjusted";
-
-export const refreshModeLabel: Record<RefreshMode, string> = {
-  workbook: "Full workbook",
-  sheet: "Single sheet",
-  adjusted: "Adjusted refresh",
-};
-
-export type Workbook = {
-  id: string;
-  name: string;
-  folder: string;
-  sheet: string;
-  learnedFrom: string;
-  learnedOn: string;
-  mode: RefreshMode;
-  lastUpdate: string;
-  runs: number;
-  watch: string;
-  columns: [from: string, to: string][];
-  cleanups: string[];
-};
-
-export const workbooks: Workbook[] = [
+export const initialQueue: QueueItem[] = [
   {
-    id: "trio",
-    name: "SSS_APR_2024-25_upload.xlsx",
-    folder: "OneDrive – ASU › TRIO › APR",
-    sheet: "Participants",
-    learnedFrom: "SSS_Active_Roster_AY2324.xlsx",
-    learnedOn: "Sep 30",
-    mode: "sheet",
-    lastUpdate: "Waiting on you",
-    runs: 3,
-    watch: "Downloads",
-    columns: [
-      ["Student Name", "Last Name, First Name, Middle Initial"],
-      ["DOB", "Birth Date"],
-      ["Elig", "Eligibility"],
-      ["Entry Term", "Cohort Year"],
-      ["Status", "Participant Status"],
-      ["Cum GPA", "Cumulative GPA"],
-    ],
-    cleanups: [
-      "Drop the report title and run date",
-      "Drop advisor group headers and Count rows",
-      "Drop page footers and blank rows",
-      "Remove duplicate students by Student ID",
-      "Map eligibility labels to APR codes",
-    ],
+    id: "cs-0316",
+    recipeId: "client-services",
+    file: "Client_Services_0316.xlsx",
+    folder: "~/Downloads",
+    meta: "246 client rows · 61 KB",
+    progress: 52,
+    pauseAt: 88,
   },
   {
-    id: "caseload",
-    name: "Weekly Caseload.xlsx",
-    folder: "HSD-Share › Reports › 2026",
-    sheet: "Caseload",
-    learnedFrom: "CASE_EXPORT_20250106.csv",
-    learnedOn: "Jan 6",
-    mode: "workbook",
-    lastUpdate: "Today, 3:41 PM",
-    runs: 41,
-    watch: "Downloads",
-    columns: [
-      ["CASE_ID", "Case ID"],
-      ["CLIENT NM", "Client"],
-      ["OPEN_DT", "Opened"],
-      ["PROGRAM", "Program"],
-      ["WORKER", "Caseworker"],
-    ],
-    cleanups: [
-      "Strip leading zeros and spaces from Case ID",
-      "Flip LAST, FIRST to First Last",
-      "Drop *** PAGE n *** markers",
-      "One date format: MM/DD/YYYY",
-    ],
+    id: "case-0316",
+    recipeId: "caseload",
+    file: "CASE_EXPORT_0316.csv",
+    folder: "~/Downloads",
+    meta: "1,382 rows · 211 KB",
+    progress: 30,
+    stopped: true,
+    stopAt: 40,
   },
   {
-    id: "advising",
-    name: "Advising Hours Tracker.xlsx",
-    folder: "OneDrive – ASU › TRIO › Tracking",
-    sheet: "October",
-    learnedFrom: "advising_log_sep.csv",
-    learnedOn: "Oct 1",
-    mode: "sheet",
-    lastUpdate: "Oct 1, 9:02 AM",
-    runs: 2,
-    watch: "Downloads",
-    columns: [
-      ["student", "Student"],
-      ["mtg_date", "Date"],
-      ["duration", "Hours"],
-      ["advisor", "Advisor"],
-    ],
-    cleanups: ["Convert 45 min and 1.5 hrs to decimal hours", "Drop cancelled meetings"],
+    id: "dep-0316",
+    recipeId: "deposits",
+    file: "CORE_GL_DUMP_0316.txt",
+    folder: "~/Desktop/Exports",
+    meta: "3,497 rows · 402 KB",
+    progress: 0,
+    startDelay: 8,
   },
   {
-    id: "gl",
-    name: "Daily Deposit Recon.xlsx",
-    folder: "Finance › Recon › FY27",
-    sheet: "Detail",
-    learnedFrom: "CORE_GL_DUMP_093026.txt",
-    learnedOn: "Sep 30",
-    mode: "workbook",
-    lastUpdate: "Yesterday, 4:55 PM",
-    runs: 12,
-    watch: "Desktop/Exports",
-    columns: [
-      ["ACCT", "Account"],
-      ["DESC", "Description"],
-      ["DR", "Debit"],
-      ["CR", "Credit"],
-      ["POST DATE", "Posted"],
-    ],
-    cleanups: ["Drop ** SUBTOTAL ** rows", "Turn (310.00) into a 310.00 credit", "Read 20261009 as 10/09/2026"],
+    id: "cs-0309",
+    recipeId: "client-services",
+    file: "Client_Services_0309.xlsx",
+    folder: "~/Downloads",
+    meta: "210 client rows · 54 KB",
+    progress: 100,
+    finishedAgo: "Mar 9",
   },
   {
-    id: "register",
-    name: "Board Packet – AP Detail.xlsx",
-    folder: "Finance › Board › Oct",
-    sheet: "AP Detail",
-    learnedFrom: "check_register_aug_26.xlsx",
-    learnedOn: "Sep 4",
-    mode: "sheet",
-    lastUpdate: "Today, 3:39 PM",
-    runs: 2,
-    watch: "Desktop/Exports",
-    columns: [
-      ["CHECK NUMBER", "Check #"],
-      ["CHECK DATE", "Date"],
-      ["VENDOR", "Vendor"],
-      ["INVOICE DESCRIPTION", "Description"],
-      ["ACCOUNT NUMBER", "Fund, Function, Object, Org"],
-      ["AMOUNT", "Amount"],
-    ],
-    cleanups: [
-      "Merge the two-row header into one",
-      "Join wrapped descriptions back onto their line",
-      "Split the account code into four columns",
-      "Drop the TOTAL footer",
-    ],
-  },
-  {
-    id: "inventory",
-    name: "Inventory Weekly.xlsx",
-    folder: "Ops › Inventory",
-    sheet: "Week 42",
-    learnedFrom: "INV_COUNT_W38.csv",
-    learnedOn: "Sep 15",
-    mode: "workbook",
-    lastUpdate: "Today, 2:40 PM",
-    runs: 5,
-    watch: "Downloads",
-    columns: [
-      ["SKU", "SKU"],
-      ["DESCR", "Item"],
-      ["ON_HAND", "On hand"],
-      ["LOC", "Location"],
-    ],
-    cleanups: ["Drop zero-quantity bins", "Title-case item names"],
+    id: "ap-0303",
+    recipeId: "ap-detail",
+    file: "check_register_feb.xlsx",
+    folder: "~/Desktop/Exports",
+    meta: "1,723 line items · 126 KB",
+    progress: 100,
+    finishedAgo: "Mar 3",
   },
 ];
 
+/* ---------- Run summary (E) and warning (F) ---------- */
+
+export type RunSummary = { duration: string; rowsIn: string; rowsOut: string; lines: string[]; saved: string };
+
+export const runSummaries: Record<string, RunSummary> = {
+  "client-services": {
+    duration: "4 seconds",
+    rowsIn: "210 client rows in the export",
+    rowsOut: "205 rows in your workbook",
+    lines: [
+      "Removed 3 junk rows at the top",
+      "Removed 3 empty columns",
+      "Removed 8 page breaks and repeated headers",
+      "Renamed 5 columns",
+      "Cleaned 210 names, formatted 210 dates, converted 210 amounts",
+      "Removed 5 rows where Status is Withdrawn (last week: 2)",
+    ],
+    saved: "Updated Client Services.xlsx, Data sheet. Your Summary tab updated too.",
+  },
+  "ap-detail": {
+    duration: "6 seconds",
+    rowsIn: "3,497 rows in the export",
+    rowsOut: "1,723 line items in your workbook",
+    lines: [
+      "Merged the two header rows",
+      "Joined 1,770 wrapped descriptions back onto their line",
+      "Split 1,723 account codes into four columns",
+      "Removed the TOTAL row",
+    ],
+    saved: "Updated Board Packet – AP Detail.xlsx, AP Detail sheet.",
+  },
+  deposits: {
+    duration: "5 seconds",
+    rowsIn: "3,497 rows in the export",
+    rowsOut: "3,491 rows in your workbook",
+    lines: ["Removed 6 subtotal rows", "Turned 412 bracketed amounts into credits", "Formatted 3,491 dates"],
+    saved: "Updated Daily Deposit Recon.xlsx, every sheet.",
+  },
+};
+
+export const warning = {
+  itemId: "cs-0316",
+  title: "Removed 41 rows where Status is Withdrawn. Usually about 4.",
+  body: "Take a look before Dropdone saves. Nothing has been written yet.",
+  header: ["Client ID", "Client Name", "Status", "Service Date", "Amount"],
+  rows: [
+    ["10611", "Ana Ruiz", "Withdrawn", "2026-03-11", ""],
+    ["10612", "Ben Okafor", "Withdrawn", "2026-03-11", ""],
+    ["10614", "Carla Diaz", "Withdrawn", "2026-03-12", ""],
+    ["10618", "Dev Shah", "Withdrawn", "2026-03-12", ""],
+    ["10620", "Elena Park", "Withdrawn", "2026-03-13", ""],
+  ],
+  more: 36,
+};
+
+export const stoppedReason = {
+  itemId: "case-0316",
+  title: "This export changed: the OPEN_DT column is missing",
+  body: "Dropdone stopped before saving, so Weekly Caseload.xlsx is untouched. Teach it again with one new example.",
+};
+
+/* ---------- Teach flow (setup, once per report) ---------- */
+
+export const teachSample = {
+  messy: "Client_Services_0302.xlsx",
+  cleaned: "Client Services.xlsx",
+  recipeName: "Weekly Client Services Report",
+  question: {
+    stepIndex: 7,
+    intro: "You removed 2 rows. Both say Withdrawn, and both have a blank Amount.",
+    ask: "Next week, should Dropdone remove a row like this?",
+    header: ["Client ID", "Client Name", "Status", "Service Date", "Amount"],
+    row: ["10491", "Rosa Diaz", "Active", "2026-03-10", "(blank)"],
+    options: ["Yes", "No", "Not sure"] as const,
+  },
+};
+
 /* ---------- Activity log ---------- */
 
-export type ActivityKind = "updated" | "asked" | "learned" | "nomatch" | "folder";
+export type ActivityKind = "updated" | "warned" | "stopped" | "learned";
 
 export type ActivityEntry = {
   id: string;
@@ -307,70 +313,44 @@ export const activity: ActivityEntry[] = [
   {
     id: "a1",
     day: "Today",
-    time: "3:39 PM",
-    kind: "updated",
-    title: "Updated Board Packet – AP Detail.xlsx",
-    detail: "From check_register_sept_26.xlsx · 1,723 line items · 1,774 junk rows removed",
-    canRestore: true,
+    time: "8:22 AM",
+    kind: "warned",
+    title: "Weekly Client Services Report is waiting on you",
+    detail: "Removed 41 rows where Status is Withdrawn, usually about 4. Nothing saved yet.",
   },
   {
     id: "a2",
     day: "Today",
-    time: "3:12 PM",
-    kind: "asked",
-    title: "Asked about SSS_Active_Roster_AY2425.xlsx",
-    detail: "Ana Martinez has N/A for GPA. Waiting on your answer before saving.",
+    time: "8:20 AM",
+    kind: "stopped",
+    title: "Weekly Caseload stopped safely",
+    detail: "CASE_EXPORT_0316.csv is missing the OPEN_DT column. Weekly Caseload.xlsx is untouched.",
   },
   {
     id: "a3",
-    day: "Today",
-    time: "2:58 PM",
-    kind: "nomatch",
-    title: "PAYROLL_0930.csv didn't match a workbook",
-    detail: "Its columns don't look like any workbook you've taught Dropdone. Nothing was changed.",
-  },
-  {
-    id: "a4",
-    day: "Today",
-    time: "2:40 PM",
-    kind: "updated",
-    title: "Updated Inventory Weekly.xlsx",
-    detail: "From INV_COUNT_W42.csv · 640 rows · sheet Week 42",
-    canRestore: true,
-  },
-  {
-    id: "a5",
     day: "Yesterday",
     time: "4:55 PM",
     kind: "updated",
     title: "Updated Daily Deposit Recon.xlsx",
-    detail: "From CORE_GL_DUMP_101526.txt · 3,412 rows · 6 subtotal rows removed",
+    detail: "From CORE_GL_DUMP_0315.txt · 3,412 rows · 6 subtotal rows removed",
     canRestore: true,
   },
   {
-    id: "a6",
-    day: "Yesterday",
-    time: "11:20 AM",
-    kind: "folder",
-    title: "Started watching HSD-Share",
-    detail: "/Volumes/HSD-Share/Exports",
-  },
-  {
-    id: "a7",
+    id: "a4",
     day: "Earlier this week",
-    time: "Mon 9:02 AM",
-    kind: "learned",
-    title: "Learned Advising Hours Tracker.xlsx",
-    detail: "From advising_log_sep.csv · 4 columns, 2 cleanup rules",
-  },
-  {
-    id: "a8",
-    day: "Earlier this week",
-    time: "Mon 8:47 AM",
+    time: "Mon 8:20 AM",
     kind: "updated",
-    title: "Updated Weekly Caseload.xlsx",
-    detail: "From CASE_EXPORT_20261012.csv · 1,355 rows · 3 date formats fixed",
+    title: "Updated Client Services.xlsx",
+    detail: "From Client_Services_0309.xlsx · 205 rows · 5 Withdrawn rows removed",
     canRestore: true,
+  },
+  {
+    id: "a5",
+    day: "Earlier this week",
+    time: "Mon 8:05 AM",
+    kind: "learned",
+    title: "Approved a new recipe: Monthly AP Check Register",
+    detail: "5 steps, learned from check_register_jan.xlsx and your cleaned workbook",
   },
 ];
 
@@ -379,15 +359,9 @@ export const activity: ActivityEntry[] = [
 export const account = {
   name: "Dana Reyes",
   initials: "DR",
-  email: "dana.reyes@example.edu",
-  org: "TRIO Student Support Services",
+  email: "dana.reyes@example.gov",
+  org: "County Human Services",
   plan: "Community",
   device: "MacBook Pro · macOS 26",
   version: "0.4.0",
-};
-
-export const folderPaths: Record<string, string> = {
-  Downloads: "~/Downloads",
-  "OneDrive – ASU": "~/Library/CloudStorage/OneDrive-ASU",
-  "HSD-Share": "/Volumes/HSD-Share/Exports",
 };

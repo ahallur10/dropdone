@@ -4,7 +4,7 @@ import { useState } from "react";
 import { account } from "../data";
 import { btnQuiet, btnSecondary, PageHeader, Section, SettingRow } from "../ui";
 
-export function AccountView({ workbookCount }: { workbookCount: number }) {
+export function AccountView({ recipeCount }: { recipeCount: number }) {
   const [checked, setChecked] = useState<"idle" | "checking" | "current">("idle");
 
   function checkUpdates() {
@@ -37,11 +37,14 @@ export function AccountView({ workbookCount }: { workbookCount: number }) {
                 <p className="type-label text-fg">Community</p>
                 <span className="badge bg-surface-strong text-fg-soft">Current</span>
               </div>
-              <p className="type-h3">Free</p>
+              <p className="type-h3">
+                Free <span className="type-body-sm">· open source</span>
+              </p>
               <ul className="flex flex-col gap-2">
-                <Feature>Learn by example</Feature>
-                <Feature>Full workbook and single sheet refresh</Feature>
-                <Feature>{workbookCount} workbooks learned</Feature>
+                <Feature>AI for setup with your own API key</Feature>
+                <Feature>When an export changes, it stops safely and you teach it again</Feature>
+                <Feature>Current recipe only</Feature>
+                <Feature>{recipeCount} recipes</Feature>
               </ul>
             </div>
             <div className="card flex flex-col gap-4 border-line p-5 hover:bg-surface">
@@ -53,10 +56,11 @@ export function AccountView({ workbookCount }: { workbookCount: number }) {
                 $20<span className="type-body-sm">/month</span>
               </p>
               <ul className="flex flex-col gap-2">
-                <Feature>Everything in Community</Feature>
-                <Feature>Adjusted refresh for up to 5 workbooks</Feature>
+                <Feature>AI for setup included, no key needed</Feature>
+                <Feature>When an export changes, adjusted refresh proposes the fix and you approve</Feature>
+                <Feature>Every recipe version saved, with one-click undo</Feature>
               </ul>
-              <button className="btn-ghost mt-auto min-h-9 cursor-pointer text-sm">Try Pro free for 14 days</button>
+              <button className="btn-ghost mt-auto min-h-9 cursor-pointer text-sm">Upgrade to Pro</button>
             </div>
           </div>
         </section>
