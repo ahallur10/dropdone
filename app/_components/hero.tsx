@@ -20,11 +20,11 @@ export function Hero() {
           </p>
           <LegacySystems />
           <div className="flex flex-wrap items-center gap-3">
-            <a className="btn-primary no-underline transition-colors hover:bg-fg-soft" href="#join">
+            <a className="btn-primary no-underline transition-colors hover:bg-fg-soft max-sm:w-full" href="#join">
               <DownloadIcon />
               Download for Mac and Windows
             </a>
-            <a className="btn-primary px-btn no-underline" href="#join">
+            <a className="btn-primary px-btn no-underline max-sm:w-full" href="#join">
               <PixelLayers />
               Get early access
             </a>

@@ -301,10 +301,10 @@ export function BeforeAfterToggle({ before, after }: { before: React.ReactNode; 
       <div role="group" className="grid w-full max-w-sm grid-cols-2 gap-1 rounded-md bg-surface p-1">
         {(
           [
-            ["before", "Before: the export"],
-            ["after", "After: your cleaned version"],
+            ["before", "Before", ": the export"],
+            ["after", "After", ": your cleaned version"],
           ] as const
-        ).map(([key, label]) => (
+        ).map(([key, label, more]) => (
           <button
             key={key}
             type="button"
@@ -318,6 +318,8 @@ export function BeforeAfterToggle({ before, after }: { before: React.ReactNode; 
             }`}
           >
             {label}
+            {/* The longer label only where there's room for it */}
+            <span className="max-sm:hidden">{more}</span>
           </button>
         ))}
       </div>
@@ -326,6 +328,7 @@ export function BeforeAfterToggle({ before, after }: { before: React.ReactNode; 
           {showing === "before" ? before : after}
         </div>
       </div>
+      <p className="type-caption sm:hidden">Swipe to see the whole sheet</p>
     </div>
   );
 }
