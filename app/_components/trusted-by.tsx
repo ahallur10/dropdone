@@ -25,8 +25,8 @@ const fmt = (n: number) => n.toLocaleString("en-US");
 
 export function TrustedBy() {
   return (
-    <section aria-label="Trusted by" className="border-b border-line-subtle bg-section">
-      <div className="mx-auto flex max-w-site flex-col items-center gap-8 px-6 pb-10 pt-16">
+    <section aria-label="Trusted by">
+      <div className="mx-auto flex max-w-site flex-col items-center gap-8 px-6 pb-10 pt-8 md:pt-10">
         <ReportsCounter />
         <p className="text-center font-display text-[clamp(1.25rem,1.1rem+0.6vw,1.6rem)] font-extrabold tracking-[-0.015em] text-fg-soft">
           Trusted by county and city teams
@@ -35,8 +35,8 @@ export function TrustedBy() {
       {/* overflow-x-clip (not hidden) so the hover cards can hang below the strip */}
       <div className="group/strip relative z-20 overflow-x-clip pb-4">
         {/* Edge fades so logos slide in and out instead of being cut off */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-linear-to-r from-section to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-linear-to-l from-section to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-linear-to-r from-page to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-linear-to-l from-page to-transparent" />
         <ul className="animate-marquee flex w-max group-hover/strip:[animation-play-state:paused] group-focus-within/strip:[animation-play-state:paused] motion-reduce:w-full motion-reduce:flex-wrap motion-reduce:justify-center">
           {[...counties, ...counties].map((c, i) => {
             const copy = i >= counties.length;

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SiteHeader } from "../_components/site-header";
 import { SiteFooter } from "../_components/site-footer";
+import { PixelDivider } from "../_components/pixel-divider";
 import { CleanSheet, MessySheet } from "./sheets";
 import { StepExplorer, type ExplorerStep } from "./step-explorer";
 import { BeforeAfterToggle, DropOnRecipe, ReviewSteps, VerifyRun } from "./step-visuals";
 import { ExportFlip } from "./export-flip";
+import { JoinSection } from "../_components/join-section";
 
 export const metadata: Metadata = {
   title: "How it works · Dropdone",
@@ -30,14 +31,14 @@ const steps: ExplorerStep[] = [
   },
   {
     n: 3,
-    tag: "Every week",
+    tag: "Every run",
     title: "Drop the next export",
-    line: "Next week, drag the new export onto its recipe. Same cleanup, no clicks.",
+    line: "Next time, drag the new export onto its saved cleanup. Same result, no clicks.",
     visual: <DropOnRecipe />,
   },
   {
     n: 4,
-    tag: "Every week",
+    tag: "Every run",
     title: "Verify",
     line: "It checks the result against your workbook before saving anything.",
     visual: <VerifyRun />,
@@ -71,26 +72,16 @@ export default function HowItWorks() {
         </section>
 
         {/* Three different exports, one clean result */}
-        <section className="border-y border-line-subtle bg-section">
+        <PixelDivider seed={6} />
+        <section>
           <div className="mx-auto max-w-site px-6 py-20 md:py-28">
             <ExportFlip />
           </div>
         </section>
+        <PixelDivider seed={7} />
 
-        {/* CTA */}
-        <section>
-          <div className="mx-auto flex max-w-site flex-col items-start gap-6 px-6 py-24 md:py-32">
-            <h2 className="max-w-[20ch]">Have your first recipe ready by next week.</h2>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/#join" className="btn-primary no-underline">
-                Get early access
-              </Link>
-              <Link href="/features" className="btn-ghost no-underline">
-                See all features
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* Join */}
+        <JoinSection heading="Show it once this week. Skip the cleanup next week." secondary={{ href: "/features", label: "See all features" }} />
       </main>
       <SiteFooter />
     </>

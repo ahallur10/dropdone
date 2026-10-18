@@ -4,7 +4,7 @@ import { useRef, useState, type ReactNode } from "react";
 
 export type ExplorerStep = {
   n: number;
-  tag: "Setup" | "Every week";
+  tag: "Setup" | "Every run";
   title: string;
   line: string;
   visual: ReactNode;
@@ -25,10 +25,27 @@ export function StepExplorer({ steps }: { steps: ExplorerStep[] }) {
     if (window.innerWidth < 1024) panel.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  // Standard tab keys: arrows move between steps, Home and End jump to the first and last.
+  function onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    const keys: Record<string, number> = {
+      ArrowRight: active + 1,
+      ArrowDown: active + 1,
+      ArrowLeft: active - 1,
+      ArrowUp: active - 1,
+      Home: 0,
+      End: steps.length - 1,
+    };
+    if (!(e.key in keys)) return;
+    e.preventDefault();
+    const next = (keys[e.key] + steps.length) % steps.length;
+    setActive(next);
+    document.getElementById(`step-tab-${steps[next].n}`)?.focus();
+  }
+
   return (
     <div className="grid gap-3 rounded-2xl border border-line-subtle bg-header p-3 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:p-4">
       {/* Step cards */}
-      <div role="tablist" aria-label="How it works, step by step" className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-rows-2">
+      <div role="tablist" aria-label="How it works, step by step" onKeyDown={onKeyDown} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-rows-2">
         {steps.map((s, i) => {
           const on = i === active;
           return (
@@ -38,6 +55,7 @@ export function StepExplorer({ steps }: { steps: ExplorerStep[] }) {
               id={`step-tab-${s.n}`}
               aria-selected={on}
               aria-controls="step-panel"
+              tabIndex={on ? 0 : -1}
               onClick={() => select(i)}
               className={`group flex cursor-pointer flex-col rounded-xl border p-5 text-left transition-colors ${
                 on ? "border-brand/50 bg-surface-strong" : "border-line-subtle bg-surface hover:border-line hover:bg-surface-hover"
@@ -98,7 +116,7 @@ export function StepExplorer({ steps }: { steps: ExplorerStep[] }) {
   );
 }
 
-// Group pill: always visible, so it's clear steps 1 and 2 happen once and 3 and 4 every week.
+// Group pill: always visible, so it's clear steps 1 and 2 happen once and 3 and 4 on every run after.
 function StepTag({ tag }: { tag: ExplorerStep["tag"] }) {
   const setup = tag === "Setup";
   return (
@@ -114,7 +132,7 @@ function StepTag({ tag }: { tag: ExplorerStep["tag"] }) {
           <path d="M4 12a8 8 0 0 1 13.6-5.7L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.6 5.7L4 15.5M4 20v-4.5h4.5" />
         </svg>
       )}
-      {setup ? "Setup · once" : "Every week"}
+      {setup ? "Setup · once" : "Every run"}
     </span>
   );
 }

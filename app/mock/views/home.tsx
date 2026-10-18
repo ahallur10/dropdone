@@ -61,7 +61,7 @@ export function HomeView({
       {/* Recipe cards: drop next week's export onto the one it belongs to */}
       <section className="flex flex-col gap-3">
         <div className="flex items-baseline justify-between">
-          <Label>Your recipes · drop an export on one to run it</Label>
+          <Label>Your cleanups · drop an export on one to run it</Label>
         </div>
         <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           {recipes.map((r) => (
@@ -126,7 +126,7 @@ export function HomeView({
       <div className="card overflow-hidden hover:bg-surface">
         <div className="grid grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)_240px] gap-6 border-b border-line-subtle px-5 py-3">
           <ColHead>Export</ColHead>
-          <ColHead>Recipe</ColHead>
+          <ColHead>Cleanup</ColHead>
           <ColHead className="text-right">Status</ColHead>
         </div>
         {visible.length === 0 ? (

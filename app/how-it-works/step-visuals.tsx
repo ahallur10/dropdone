@@ -107,7 +107,7 @@ function ContextFile() {
           </svg>
           Context file
         </p>
-        <span className="type-data text-[10px] uppercase tracking-[0.08em] text-brand">Saved with the recipe</span>
+        <span className="type-data text-[10px] uppercase tracking-[0.08em] text-brand">Saved with the cleanup</span>
       </div>
       <dl className="grid gap-x-4 gap-y-1.5 sm:grid-cols-[110px_1fr]">
         {contextFile.entries.map((e) => (
@@ -122,7 +122,7 @@ function ContextFile() {
   );
 }
 
-/* ---------- Step 3: drop the next export onto the recipe card ---------- */
+/* ---------- Step 3: drop the next export onto its saved cleanup ---------- */
 
 export function DropOnRecipe() {
   // 0 file waiting · 1 file over card · 2 dropped · 3-5 running · 6 done
@@ -158,7 +158,7 @@ export function DropOnRecipe() {
         <path d="M5 3.5v15.2l4.1-3.7 2.6 6 2.7-1.2-2.6-5.9h5.6L5 3.5Z" fill="var(--color-fg)" stroke="var(--color-fg-inverse)" strokeWidth="1.4" strokeLinejoin="round" />
       </svg>
 
-      {/* The recipe card */}
+      {/* The saved cleanup's card */}
       <div
         className={`flex w-full flex-col gap-3 rounded-xl border p-5 transition-colors duration-300 ${
           over ? "border-brand bg-brand-a10" : "border-line bg-surface"
@@ -199,7 +199,7 @@ export function VerifyRun() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div role="tablist" className="grid w-full max-w-sm grid-cols-2 gap-1 rounded-md bg-surface p-1">
+      <div role="group" className="grid w-full max-w-sm grid-cols-2 gap-1 rounded-md bg-surface p-1">
         {(
           [
             ["ok", "A normal week"],
@@ -208,8 +208,8 @@ export function VerifyRun() {
         ).map(([key, label]) => (
           <button
             key={key}
-            role="tab"
-            aria-selected={mode === key}
+            type="button"
+            aria-pressed={mode === key}
             onClick={() => setMode(key)}
             className={`type-label min-h-8 cursor-pointer rounded-sm px-3 text-[13px] transition-colors ${
               mode === key ? "bg-surface-strong text-fg" : "text-fg-muted hover:text-fg"
@@ -298,7 +298,7 @@ export function BeforeAfterToggle({ before, after }: { before: React.ReactNode; 
 
   return (
     <div ref={ref} className="flex flex-col items-center gap-4">
-      <div role="tablist" className="grid w-full max-w-sm grid-cols-2 gap-1 rounded-md bg-surface p-1">
+      <div role="group" className="grid w-full max-w-sm grid-cols-2 gap-1 rounded-md bg-surface p-1">
         {(
           [
             ["before", "Before: the export"],
@@ -307,8 +307,8 @@ export function BeforeAfterToggle({ before, after }: { before: React.ReactNode; 
         ).map(([key, label]) => (
           <button
             key={key}
-            role="tab"
-            aria-selected={showing === key}
+            type="button"
+            aria-pressed={showing === key}
             onClick={() => {
               setTouched(true);
               setSide(key);

@@ -349,7 +349,7 @@ export const activity: ActivityEntry[] = [
     day: "Earlier this week",
     time: "Mon 8:05 AM",
     kind: "learned",
-    title: "Approved a new recipe: Monthly AP Check Register",
+    title: "Approved a new cleanup: Monthly AP Check Register",
     detail: "5 steps, learned from check_register_jan.xlsx and your cleaned workbook",
   },
 ];

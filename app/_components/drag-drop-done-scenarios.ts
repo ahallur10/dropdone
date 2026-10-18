@@ -3,7 +3,7 @@
 // All names, IDs and numbers are made up.
 
 export type DddScenario = {
-  /** The recipe the export is dropped on. */
+  /** The saved cleanup the export is dropped on. */
   recipe: string;
   /**
    * The messy export, as a legacy system's PDF looks once converted to Excel: 9 columns (A to I)

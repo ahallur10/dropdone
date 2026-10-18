@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { PixelLayers } from "./pixel-layers";
 
 // Planned pricing from the PRD. Pro is framed as "works out of the box and keeps working".
 type Billing = "monthly" | "yearly";
@@ -15,12 +16,12 @@ const tiers = [
     blurb: "For people who want full control, and IT teams who want to read the code.",
     features: [
       "Learns from your before and after",
-      "Unlimited recipes, full workbook or single sheet",
+      "Unlimited saved cleanups, full workbook or single sheet",
       "AI for setup with your own API key",
       "When an export changes, it stops safely and you teach it again",
       "Weekly runs on your computer, offline",
     ],
-    cta: { label: "Get early access", href: "/#join", style: "btn-primary" },
+    cta: { label: "Get early access", href: "#join", style: "btn-primary" },
   },
   {
     name: "Pro",
@@ -32,10 +33,10 @@ const tiers = [
       "Everything in Community",
       "AI for setup included, no key needed",
       "When an export changes, adjusted refresh proposes the fix and you approve",
-      "Every recipe version saved, with one-click undo",
+      "Every version of a cleanup saved, with one-click undo",
       "Adjusted refresh on up to 5 workbooks",
     ],
-    cta: { label: "Get early access", href: "/#join", style: "btn-primary" },
+    cta: { label: "Get early access", href: "#join", style: "btn-primary" },
     featured: true,
   },
   {
@@ -46,11 +47,11 @@ const tiers = [
     blurb: "For a department rolling Dropdone out after a pilot.",
     features: [
       "Everything in Pro, on unlimited workbooks",
-      "Shared recipes and an admin view",
+      "Shared cleanups and an admin view",
       "A data-handling statement for your IT review",
       "Pay by annual invoice or purchase order",
     ],
-    cta: { label: "Talk to us", href: "/#join", style: "btn-ghost" },
+    cta: { label: "Talk to us", href: "#join", style: "btn-ghost" },
   },
 ] as const;
 
@@ -59,12 +60,12 @@ export function PricingTiers() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div role="tablist" aria-label="Billing period" className="grid grid-cols-2 gap-1 self-start rounded-lg border border-line bg-surface p-1">
+      <div role="group" aria-label="Billing period" className="grid grid-cols-2 gap-1 self-start rounded-lg border border-line bg-surface p-1">
         {(["monthly", "yearly"] as Billing[]).map((b) => (
           <button
             key={b}
-            role="tab"
-            aria-selected={billing === b}
+            type="button"
+            aria-pressed={billing === b}
             onClick={() => setBilling(b)}
             className={`type-label flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-md px-5 text-sm capitalize transition-colors ${
               billing === b ? "bg-surface-strong text-fg" : "text-fg-muted hover:text-fg"
@@ -113,7 +114,8 @@ export function PricingTiers() {
                   </li>
                 ))}
               </ul>
-              <Link href={t.cta.href} className={`${t.cta.style} mt-auto no-underline`}>
+              <Link href={t.cta.href} className={`${t.cta.style} ${t.cta.style === "btn-primary" ? "px-btn" : ""} mt-auto no-underline`}>
+                {t.cta.style === "btn-primary" && <PixelLayers />}
                 {t.cta.label}
               </Link>
             </article>

@@ -1,15 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-
-const teamTypes = [
-  "Government",
-  "Nonprofit or higher ed",
-  "Small business or bookkeeping",
-  "Ops or inventory",
-  "Something else",
-];
-const reportCounts = ["1 to 4", "5 to 10", "11 to 25", "More than 25"];
+import { useRef, useState, type FormEvent } from "react";
+import { PixelLayers } from "./pixel-layers";
+import { reportCounts, teamTypes } from "./waitlist-options";
 
 type Step = "email" | "survey" | "done";
 
@@ -20,13 +13,20 @@ export function Waitlist() {
   const [reports, setReports] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // State updates land after the event, so a ref is what actually stops a double submit.
+  const inFlight = useRef(false);
 
   async function send(payload: Record<string, string | null>) {
-    const res = await fetch("/api/waitlist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    let res: Response;
+    try {
+      res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      throw new Error("Couldn't reach the server. Check your connection and try again.");
+    }
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       throw new Error(body.error ?? "Something went wrong. Try again?");
@@ -35,26 +35,33 @@ export function Waitlist() {
 
   async function onJoin(e: FormEvent) {
     e.preventDefault();
+    // Enter or a double click can submit again while a request is in flight; ignore repeats.
+    if (inFlight.current) return;
+    inFlight.current = true;
     setPending(true);
     setError(null);
     try {
-      await send({ email });
+      await send({ email: email.trim() });
       setStep("survey");
     } catch (err) {
       setError((err as Error).message);
     } finally {
+      inFlight.current = false;
       setPending(false);
     }
   }
 
   async function onSurvey(e: FormEvent) {
     e.preventDefault();
+    if (inFlight.current) return;
+    inFlight.current = true;
     setPending(true);
     try {
-      await send({ email, team, reports });
+      await send({ email: email.trim(), team, reports });
     } catch {
       // The email is already saved; a failed survey shouldn't block the thank-you.
     } finally {
+      inFlight.current = false;
       setPending(false);
       setStep("done");
     }
@@ -74,19 +81,26 @@ export function Waitlist() {
             autoComplete="email"
             placeholder="you@yourcounty.gov"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            maxLength={254}
+            aria-invalid={error ? true : undefined}
+            aria-describedby="waitlist-note"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (error) setError(null);
+            }}
             className="input w-full sm:flex-1"
           />
-          <button type="submit" disabled={pending} className="btn-primary cursor-pointer disabled:opacity-60">
+          <button type="submit" disabled={pending} className="btn-primary px-btn cursor-pointer disabled:opacity-60">
+            <PixelLayers />
             {pending ? "Saving…" : "Get early access"}
           </button>
         </div>
         {error ? (
-          <p role="alert" className="type-body-sm text-danger">
+          <p id="waitlist-note" role="alert" className="type-body-sm text-danger">
             {error}
           </p>
         ) : (
-          <p className="type-caption">No spam. One email when your download is ready.</p>
+          <p id="waitlist-note" className="type-caption">No spam. One email when your download is ready.</p>
         )}
       </form>
     );
@@ -119,7 +133,7 @@ export function Waitlist() {
     <div className="card w-full max-w-xl p-6 hover:bg-surface">
       <h3 className="type-h4">Thanks. You&apos;re in.</h3>
       <p className="type-body-sm mt-2">
-        We&apos;ll email {email} when your Mac or Windows download is ready.
+        We&apos;ll email {email.trim()} when your Mac or Windows download is ready.
       </p>
     </div>
   );
@@ -134,7 +148,7 @@ function ChipGroup({
   legend: string;
   options: string[];
   value: string | null;
-  onChange: (v: string) => void;
+  onChange: (v: string | null) => void;
 }) {
   return (
     <fieldset className="flex flex-col gap-3">
@@ -147,7 +161,7 @@ function ChipGroup({
               key={o}
               type="button"
               aria-pressed={active}
-              onClick={() => onChange(o)}
+              onClick={() => onChange(active ? null : o)}
               className={`type-body-sm cursor-pointer rounded-pill border px-3.5 py-1.5 transition-colors ${
                 active
                   ? "border-brand bg-brand-a10 text-brand"

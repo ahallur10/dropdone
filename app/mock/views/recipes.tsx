@@ -24,17 +24,17 @@ export function RecipesView({
   return (
     <>
       <PageHeader
-        title="Recipes"
+        title="Cleanups"
         actions={
           <button onClick={() => onTeach()} className="btn-primary min-h-9 cursor-pointer px-3.5 text-sm">
-            New recipe
+            New cleanup
           </button>
         }
       />
 
       <div className="card overflow-hidden hover:bg-surface">
         <div className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_90px_150px] gap-6 border-b border-line-subtle px-5 py-3">
-          <ColHead>Recipe</ColHead>
+          <ColHead>Cleanup</ColHead>
           <ColHead>Learned from</ColHead>
           <ColHead>Steps</ColHead>
           <ColHead className="text-right">Last run</ColHead>
@@ -92,7 +92,7 @@ export function RecipesView({
                 }}
                 className={`${btnQuiet} text-danger hover:text-danger`}
               >
-                Delete recipe
+                Delete cleanup
               </button>
             </>
           }
@@ -125,10 +125,10 @@ export function RecipesView({
           </div>
 
           <div className="flex flex-col gap-3">
-            <Label>Recipe history</Label>
+            <Label>Version history</Label>
             <div className="flex items-center justify-between gap-4 rounded-lg border border-line bg-surface p-4">
               <div>
-                <p className="type-body-sm text-fg-soft">Current recipe only</p>
+                <p className="type-body-sm text-fg-soft">Current version only</p>
                 <p className="type-caption mt-0.5">Pro saves every version, with one-click undo.</p>
               </div>
               <ProBadge />
@@ -241,12 +241,12 @@ export function TeachModal({
       <div
         onClick={(e) => e.stopPropagation()}
         role="dialog"
-        aria-label="Teach a recipe"
+        aria-label="Teach a cleanup"
         className="relative flex max-h-[88%] w-[680px] flex-col overflow-hidden rounded-xl border border-line bg-section"
       >
         <div className="flex items-center justify-between border-b border-line-subtle px-6 py-4">
           <div>
-            <p className="type-label text-fg">{reteach ? `Teach ${reteach.name} again` : "New recipe"}</p>
+            <p className="type-label text-fg">{reteach ? `Teach ${reteach.name} again` : "New cleanup"}</p>
             <p className="type-caption mt-0.5">
               {step === "files" && "Clean one export by hand like you always do. Give Dropdone the before and after."}
               {step === "learning" && "Comparing the before and after."}
@@ -377,7 +377,7 @@ export function TeachModal({
                 onClick={save}
                 className="btn-primary min-h-9 cursor-pointer px-3.5 text-sm disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Approve recipe
+                Approve cleanup
               </button>
             </div>
           </div>

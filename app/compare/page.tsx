@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SiteHeader } from "../_components/site-header";
 import { SiteFooter } from "../_components/site-footer";
+import { PixelDivider } from "../_components/pixel-divider";
+import { JoinSection } from "../_components/join-section";
 
 export const metadata: Metadata = {
   title: "Compare · Dropdone",
@@ -128,14 +129,15 @@ export default function ComparePage() {
         </section>
 
         {/* Comparison */}
-        <section className="border-y border-line-subtle bg-section">
+        <PixelDivider seed={11} />
+        <section>
           <div className="mx-auto flex max-w-site flex-col gap-10 px-6 py-20 md:py-28">
             <h2 className="max-w-[24ch]">How it compares with the tools you already have.</h2>
 
             <div className="-mx-6 overflow-x-auto px-6 lg:overflow-visible">
               <div className="min-w-[920px]" role="table" aria-label="Dropdone compared with Power Query, Excel macros and Microsoft Copilot">
                 {/* Header row stays pinned under the nav while you scroll the comparisons */}
-                <div role="row" className={`${GRID} z-20 border-b border-line bg-section lg:sticky lg:top-20`}>
+                <div role="row" className={`${GRID} z-20 border-b border-line bg-page lg:sticky lg:top-20`}>
                   <span role="columnheader" className="py-4" />
                   <span role="columnheader" className="flex items-center justify-center rounded-t-xl bg-brand-a10 px-4 py-4">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -164,6 +166,7 @@ export default function ComparePage() {
             <p className="type-caption">Based on how each tool usually works out of the box. Your setup may differ.</p>
           </div>
         </section>
+        <PixelDivider seed={12} />
 
         {/* For you if */}
         <section>
@@ -196,20 +199,9 @@ export default function ComparePage() {
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="border-t border-line-subtle bg-section">
-          <div className="mx-auto flex max-w-site flex-col items-start gap-6 px-6 py-24 md:py-32">
-            <h2 className="max-w-[20ch]">Stop cleaning the same report twice.</h2>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/#join" className="btn-primary no-underline">
-                Get early access
-              </Link>
-              <Link href="/how-it-works" className="btn-ghost no-underline">
-                See how it works
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* Join */}
+        <PixelDivider seed={13} />
+        <JoinSection secondary={{ href: "/pricing", label: "See pricing" }} />
       </main>
       <SiteFooter />
     </>

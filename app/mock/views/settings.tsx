@@ -22,7 +22,7 @@ export function SettingsView() {
       <div className="flex max-w-[760px] flex-col gap-8">
         <Section
           title="AI for setup"
-          description="AI is only used once per recipe, to compare your before and after and write the steps."
+          description="AI is only used once per cleanup, to compare your before and after and write the steps."
         >
           <SettingRow
             title="Your API key"
@@ -103,7 +103,7 @@ export function SettingsView() {
           />
           <SettingRow
             title="Show in menu bar"
-            description="Drop an export on the menu bar icon, then pick its recipe."
+            description="Drop an export on the menu bar icon, then pick its cleanup."
             control={<Toggle label="Show in menu bar" checked={s.menuBar} onChange={set("menuBar")} />}
           />
           <SettingRow

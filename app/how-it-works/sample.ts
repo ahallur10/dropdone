@@ -85,7 +85,7 @@ export const warning = {
   body: "Take a look before Dropdone saves.",
 };
 
-/* The context file Dropdone saves with the recipe at setup. Weekly runs use it to find things
+/* The context file Dropdone saves with the cleanup at setup. Weekly runs use it to find things
    by what they are, not where they were; when something doesn't fit, it's what Dropdone checks
    before stopping to ask. */
 export const contextFile = {
