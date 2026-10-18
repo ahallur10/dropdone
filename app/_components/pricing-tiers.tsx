@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { PixelLayers } from "./pixel-layers";
+import { scrollToHash } from "./scroll-to-hash";
 
 // Planned pricing from the PRD. Pro is framed as "works out of the box and keeps working".
 type Billing = "monthly" | "yearly";
@@ -121,13 +121,14 @@ export function PricingTiers() {
                 ))}
               </ul>
               {"note" in t.cta && <p className="type-caption mt-auto -mb-2 text-fg-soft">{t.cta.note}</p>}
-              <Link
+              <a
                 href={t.cta.href}
+                onClick={scrollToHash}
                 className={`${t.cta.style} ${t.cta.style === "btn-primary" ? "px-btn" : ""} ${"note" in t.cta ? "" : "mt-auto"} no-underline`}
               >
                 {t.cta.style === "btn-primary" && <PixelLayers />}
                 {t.cta.label}
-              </Link>
+              </a>
             </article>
           );
         })}
