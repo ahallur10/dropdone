@@ -86,10 +86,10 @@ export default function PricingPage() {
     <>
       <SiteHeader />
       <main>
-        {/* Hero + plans */}
+        {/* Hero: the pixel field sits behind the headline only, like the other inner pages */}
         <section className="relative overflow-hidden">
           <PixelField seed={4} />
-          <div className="relative mx-auto flex max-w-site flex-col gap-12 px-6 pb-24 pt-36 md:pb-28 md:pt-44">
+          <div className="relative mx-auto flex max-w-site flex-col gap-12 px-6 pb-12 pt-36 md:pb-14 md:pt-44">
             <div className="flex max-w-[720px] flex-col gap-6">
               <h1>
                 Free to start. Pro keeps it{" "}
@@ -100,6 +100,12 @@ export default function PricingPage() {
                 or get stuck when an export changes.
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* Plans */}
+        <section>
+          <div className="mx-auto max-w-site px-6 pb-24 md:pb-28">
             <PricingTiers />
           </div>
         </section>

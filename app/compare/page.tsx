@@ -109,7 +109,7 @@ export default function ComparePage() {
         {/* Hero */}
         <section className="relative overflow-hidden">
           <PixelField seed={3} />
-          <div className="relative mx-auto flex max-w-site flex-col gap-12 px-6 pb-16 pt-36 md:pb-20 md:pt-44">
+          <div className="relative mx-auto flex max-w-site flex-col gap-12 px-6 pb-8 pt-36 md:pb-10 md:pt-44">
             <div className="flex max-w-[760px] flex-col gap-6">
               <h1>
                 Built for the cleanup you{" "}
@@ -128,10 +128,9 @@ export default function ComparePage() {
           </div>
         </section>
 
-        {/* Comparison */}
-        <PixelDivider seed={11} />
+        {/* Comparison: follows straight on from the opening, no divider */}
         <section>
-          <div className="mx-auto flex max-w-site flex-col gap-10 px-6 py-20 md:py-28">
+          <div className="mx-auto flex max-w-site flex-col gap-10 px-6 pb-20 pt-8 md:pb-28 md:pt-10">
             <h2 className="max-w-[24ch]">How it compares with the tools you already have.</h2>
 
             <div className="-mx-6 overflow-x-auto px-6 lg:overflow-visible">
