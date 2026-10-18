@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { usePixelStrip } from "./pixel-divider";
 import { PixelLayers } from "./pixel-layers";
+import { scrollToHash } from "./scroll-to-hash";
 
 // Every tab is its own page; the homepage also has short versions of each.
 const links = [
@@ -109,11 +110,18 @@ export function SiteHeader() {
         </nav>
         <div className="flex items-center gap-2">
           {/* Hidden on the narrowest phones, where it lives in the menu instead */}
-          <Link href="#join" onClick={() => setMenuOpen(false)} className="btn-primary px-btn whitespace-nowrap no-underline max-[379px]:hidden">
+          <a
+            href="#join"
+            onClick={(e) => {
+              setMenuOpen(false);
+              scrollToHash(e);
+            }}
+            className="btn-primary px-btn whitespace-nowrap no-underline max-[379px]:hidden"
+          >
             <PixelLayers />
             Get early access
             <ArrowIcon />
-          </Link>
+          </a>
           <button
             type="button"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -152,11 +160,18 @@ export function SiteHeader() {
             );
           })}
         </nav>
-        <Link href="#join" onClick={() => setMenuOpen(false)} className="btn-primary px-btn mt-2 w-full no-underline">
+        <a
+          href="#join"
+          onClick={(e) => {
+            setMenuOpen(false);
+            scrollToHash(e);
+          }}
+          className="btn-primary px-btn mt-2 w-full no-underline"
+        >
           <PixelLayers />
           Get early access
           <ArrowIcon />
-        </Link>
+        </a>
       </div>
     </header>
   );
