@@ -11,7 +11,16 @@ export function HashScroll() {
   useEffect(() => {
     const id = decodeURIComponent(window.location.hash.slice(1));
     if (!id) return;
-    const jump = () => document.getElementById(id)?.scrollIntoView({ behavior: "instant", block: "start" });
+    const jump = () => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      // Older Safari rejects "instant" with an error; fall back to the default behaviour.
+      try {
+        el.scrollIntoView({ behavior: "instant", block: "start" });
+      } catch {
+        el.scrollIntoView({ block: "start" });
+      }
+    };
     const raf = requestAnimationFrame(jump);
     if (document.readyState === "complete") {
       const t = setTimeout(jump, 150);

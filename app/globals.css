@@ -306,14 +306,14 @@
     overflow: hidden;
     transition: translate 220ms cubic-bezier(.2,.7,.2,1), scale 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms ease;
   }
-  .px-btn:is(:hover, :focus-visible) {
+  .px-btn:focus-visible {
     translate: 0 -2px;
     scale: 1.025;
     box-shadow: 0 8px 22px -10px rgb(209 254 23 / 0.45);
   }
   .px-btn:active { scale: 0.985; translate: 0 -1px; transition-duration: 90ms; }
   .px-btn > svg { transition: translate 220ms cubic-bezier(.2,.7,.2,1); }
-  .px-btn:is(:hover, :focus-visible) > svg { translate: 3px 0; }
+  .px-btn:focus-visible > svg { translate: 3px 0; }
 
   /* Lime fill: a solid sweep plus a band of 4px checker cells at its leading edge, so the
      colour arrives cell by cell rather than as a straight wipe. */
@@ -335,7 +335,7 @@
     opacity: 0;
     transition: opacity 240ms ease, --px-sweep 0s linear 240ms;
   }
-  .px-btn:is(:hover, :focus-visible) .px-btn__fill {
+  .px-btn:focus-visible .px-btn__fill {
     --px-sweep: 116%;
     opacity: 1;
     transition: --px-sweep 300ms steps(10, end), opacity 0s;
@@ -356,11 +356,33 @@
     animation: px-float 2s ease-in-out infinite alternate;
     animation-play-state: paused;
   }
-  .px-btn:is(:hover, :focus-visible) .px-btn__dots {
+  .px-btn:focus-visible .px-btn__dots {
     opacity: 1;
     transition: opacity 220ms ease 180ms;
   }
-  .px-btn:is(:hover, :focus-visible) .px-btn__dots > span { animation-play-state: running; }
+  .px-btn:focus-visible .px-btn__dots > span { animation-play-state: running; }
+
+
+  /* Mouse hover only: on touch screens iOS keeps :hover after a tap, which would leave the
+     button lime after you've tapped it. Keyboard focus above still shows the effect. */
+  @media (hover: hover) {
+    .px-btn:hover {
+      translate: 0 -2px;
+      scale: 1.025;
+      box-shadow: 0 8px 22px -10px rgb(209 254 23 / 0.45);
+    }
+    .px-btn:hover > svg { translate: 3px 0; }
+    .px-btn:hover .px-btn__fill {
+      --px-sweep: 116%;
+      opacity: 1;
+      transition: --px-sweep 300ms steps(10, end), opacity 0s;
+    }
+    .px-btn:hover .px-btn__dots {
+      opacity: 1;
+      transition: opacity 220ms ease 180ms;
+    }
+    .px-btn:hover .px-btn__dots > span { animation-play-state: running; }
+  }
 
   .card {
     background: var(--color-surface);
