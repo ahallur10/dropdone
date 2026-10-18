@@ -14,6 +14,7 @@ import {
   UndoRestore,
 } from "./visuals";
 import { JoinSection } from "../_components/join-section";
+import { CarouselDots } from "./carousel-dots";
 
 export const metadata: Metadata = {
   title: "Features · Dropdone",
@@ -49,9 +50,11 @@ function Tile({
   badge?: ReactNode;
 }) {
   const spanClass = { 2: "lg:col-span-2", 3: "lg:col-span-3", 4: "md:col-span-2 lg:col-span-4" }[span];
+  // On phones each card is one slide of the carousel.
+  const slide = "max-md:w-[86%] max-md:shrink-0 max-md:snap-center";
   return (
     <article
-      className={`flex flex-col overflow-hidden rounded-2xl border ${toneClass[tone]} ${spanClass} ${
+      className={`flex flex-col overflow-hidden rounded-2xl border ${toneClass[tone]} ${spanClass} ${slide} ${
         // The minimum heights only matter for lining up the desktop grid; phones size to content.
         tall ? "md:min-h-[520px]" : "md:min-h-[440px]"
       }`}
@@ -91,8 +94,13 @@ export default function FeaturesPage() {
         </section>
 
         {/* Bento */}
-        <section>
-          <div className="mx-auto grid max-w-site gap-4 px-6 pb-24 md:grid-cols-2 md:pb-32 lg:grid-cols-6">
+        {/* Phones: a sideways swipe carousel with position dots. Tablets and up: the bento grid. */}
+        <section className="pb-24 md:pb-32">
+          <p className="type-caption mx-auto max-w-site px-6 pb-3 md:hidden">Swipe to see all 8 features →</p>
+          <div
+            id="feature-cards"
+            className="mx-auto flex max-w-site snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-6 px-6 pb-4 [scrollbar-width:none] md:grid md:snap-none md:grid-cols-2 md:gap-4 md:overflow-visible md:pb-0 lg:grid-cols-6 [&::-webkit-scrollbar]:hidden"
+          >
             <Tile
               span={4}
               tall
@@ -152,6 +160,7 @@ export default function FeaturesPage() {
               visual={<ProFixVisual />}
             />
           </div>
+          <CarouselDots targetId="feature-cards" count={8} />
         </section>
 
         {/* Join */}

@@ -480,3 +480,11 @@ html { scroll-behavior: smooth; }
   .px-btn__fill, .px-btn:is(:hover, :focus-visible) .px-btn__fill { -webkit-mask: none; mask: none; transition: opacity 150ms ease; }
   .px-btn__dots { display: none; }
 }
+
+/* iOS draws a big play button over a video it hasn't started (Low Power Mode). The hero is a
+   silent background loop, so hide it; the poster shows until playback begins. */
+.hero-video::-webkit-media-controls-start-playback-button,
+.hero-video::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
+}
