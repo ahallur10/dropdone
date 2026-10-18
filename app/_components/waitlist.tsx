@@ -77,7 +77,7 @@ export function Waitlist() {
             onChange={(e) => setEmail(e.target.value)}
             className="input w-full sm:flex-1"
           />
-          <button type="submit" disabled={pending} className="btn-brand cursor-pointer disabled:opacity-60">
+          <button type="submit" disabled={pending} className="btn-primary cursor-pointer disabled:opacity-60">
             {pending ? "Saving…" : "Get early access"}
           </button>
         </div>

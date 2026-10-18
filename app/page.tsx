@@ -5,43 +5,9 @@ import { Hero } from "./_components/hero";
 import { TrustedBy } from "./_components/trusted-by";
 import { Security } from "./_components/security";
 import { FeatureCard } from "./_components/features";
+import { PricingTiers } from "./_components/pricing-tiers";
 import { DragDropDone } from "./_components/drag-drop-done";
 import { Waitlist } from "./_components/waitlist";
-
-const tiers = [
-  {
-    name: "Community",
-    price: "Free",
-    note: "Open source",
-    features: [
-      "Learn by example from your own workbook",
-      "Full workbook and single sheet refresh",
-      "Runs entirely on your computer",
-    ],
-  },
-  {
-    name: "Pro",
-    price: "$20",
-    unit: "/month",
-    note: "Early access",
-    badge: "pink",
-    features: [
-      "Everything in Community",
-      "Adjusted refresh for up to 5 workbooks",
-      "When an export's format changes, AI matches your original output",
-    ],
-  },
-  {
-    name: "Team",
-    price: "Let's talk",
-    note: "For larger orgs",
-    features: [
-      "Unlimited workbooks",
-      "Shared setup across your team",
-      "Help getting through IT approval",
-    ],
-  },
-];
 
 export default function Home() {
   return (
@@ -90,35 +56,14 @@ export default function Home() {
 
         {/* Pricing */}
         <section id="pricing" className="scroll-mt-16 border-y border-line-subtle bg-section">
-          <div className="mx-auto flex max-w-site flex-col gap-12 px-6 py-24 md:py-32">
-            <div className="flex flex-col gap-4">
-              <h2 className="max-w-[22ch]">Free to start. Open source at the core.</h2>
+          <div className="mx-auto flex max-w-site flex-col gap-10 px-6 py-24 md:py-32">
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <h2 className="max-w-[22ch]">Free to start. Pro keeps it working.</h2>
+              <Link href="/pricing" className="btn-ghost no-underline">
+                Compare plans
+              </Link>
             </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              {tiers.map((t) => (
-                <article key={t.name} className="card flex flex-col gap-6 p-6">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="type-h4">{t.name}</h3>
-                    <span className={`badge shrink-0 whitespace-nowrap ${t.badge === "pink" ? "badge-pink" : "bg-surface-strong text-fg-soft"}`}>
-                      {t.note}
-                    </span>
-                  </div>
-                  <p className="flex items-baseline gap-1">
-                    <span className="type-h2">{t.price}</span>
-                    {t.unit && <span className="type-body-sm">{t.unit}</span>}
-                  </p>
-                  <ul className="flex flex-col gap-3 border-t border-line-subtle pt-6">
-                    {t.features.map((f) => (
-                      <li key={f} className="type-body-sm flex gap-2.5 text-fg-soft">
-                        <span aria-hidden="true" className="mt-[7px] size-1.5 shrink-0 rounded-[1px] bg-brand" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
-            <p className="type-caption">Planned pricing. It may change before launch.</p>
+            <PricingTiers />
           </div>
         </section>
 

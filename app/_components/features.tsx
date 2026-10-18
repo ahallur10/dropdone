@@ -10,16 +10,12 @@ import { useLoop } from "./use-loop";
  * finished state, which is also what reduced-motion visitors see.
  */
 
-export type FeatureKey = "learn" | "watch" | "ask" | "inPlace" | "follow" | "local";
+export type FeatureKey = "learn" | "ask" | "inPlace" | "follow" | "local";
 
 export const featureCopy: Record<FeatureKey, { title: string; body: string }> = {
   learn: {
     title: "Learns from one example",
     body: "Show it one messy export and the workbook you made from it. It works out which column goes where, so nobody writes rules.",
-  },
-  watch: {
-    title: "Watches your folders",
-    body: "Point it at Downloads or a shared drive. New exports get picked up and cleaned without you opening the app.",
   },
   ask: {
     title: "Asks instead of guessing",
@@ -41,7 +37,6 @@ export const featureCopy: Record<FeatureKey, { title: string; body: string }> = 
 
 const vignettes: Record<FeatureKey, () => ReactNode> = {
   learn: LearnVignette,
-  watch: WatchVignette,
   ask: AskVignette,
   inPlace: InPlaceVignette,
   follow: FollowVignette,
@@ -66,7 +61,7 @@ export function FeatureCard({ feature }: { feature: FeatureKey }) {
 
 /* ------------------------------------------------------------------ */
 
-function Stage({ children, stageRef }: { children: ReactNode; stageRef: React.Ref<HTMLDivElement> }) {
+export function Stage({ children, stageRef }: { children: ReactNode; stageRef: React.Ref<HTMLDivElement> }) {
   return (
     <div ref={stageRef} className="relative flex h-60 items-center justify-center overflow-hidden px-6" aria-hidden="true">
       {children}
@@ -74,7 +69,7 @@ function Stage({ children, stageRef }: { children: ReactNode; stageRef: React.Re
   );
 }
 
-function Chip({ children, lit, mono = true }: { children: ReactNode; lit?: boolean; mono?: boolean }) {
+export function Chip({ children, lit, mono = true }: { children: ReactNode; lit?: boolean; mono?: boolean }) {
   return (
     <span
       className={`${mono ? "type-data text-[11px]" : "type-body-sm text-[12px]"} inline-flex h-7 items-center rounded-sm border px-2.5 transition-colors duration-300 ${
@@ -87,7 +82,7 @@ function Chip({ children, lit, mono = true }: { children: ReactNode; lit?: boole
 }
 
 /* 1. Learns from one example: messy headers map to the workbook's columns one by one. */
-function LearnVignette() {
+export function LearnVignette() {
   const pairs = [
     ["CASE_ID", "Case ID"],
     ["CLIENT NM", "Client"],
@@ -128,51 +123,8 @@ function LearnVignette() {
   );
 }
 
-/* 2. Watches your folders: a new export lands in Downloads and gets picked up. */
-function WatchVignette() {
-  const { ref, step } = useLoop<HTMLDivElement>(7, 700);
-  const arrived = step >= 1;
-  const picked = step >= 2;
-  const progress = [0, 0, 0, 35, 70, 100, 100][step];
-  const files = ["budget_draft_v3.xlsx", "IMG_2041.jpg", "meeting notes.docx"];
-  return (
-    <Stage stageRef={ref}>
-      <div className="w-full max-w-[360px] overflow-hidden rounded-lg border border-line bg-page">
-        <div className="flex items-center gap-2 border-b border-line-subtle bg-header px-3 py-2">
-          <span className="type-label text-[12px] text-fg-soft">Downloads</span>
-          <span className="type-caption ml-auto flex items-center gap-1.5 text-[11px]">
-            <span className="size-1.5 rounded-full bg-success" />
-            Watched by Dropdone
-          </span>
-        </div>
-        <div
-          className="grid transition-[grid-template-rows] duration-300"
-          style={{ gridTemplateRows: arrived ? "1fr" : "0fr" }}
-        >
-          <div className="overflow-hidden">
-            <div className="flex items-center gap-3 border-b border-line-subtle bg-surface-hover px-3 py-2.5">
-              <span className="type-data flex size-7 items-center justify-center rounded-sm bg-surface-strong text-[9px] text-fg-soft">CSV</span>
-              <span className="type-label min-w-0 flex-1 truncate text-[12px] text-fg">CASE_EXPORT_1023.csv</span>
-              <span className={`flex items-center gap-2 transition-opacity duration-300 ${picked ? "opacity-100" : "opacity-0"}`}>
-                <span className="type-data text-[10px] text-fg-subtle">{progress >= 100 ? "Done" : `${progress}%`}</span>
-                <Donut stage={progress >= 100 ? "done" : progress > 0 ? "cleaning" : "queued"} progress={progress} size={22} />
-              </span>
-            </div>
-          </div>
-        </div>
-        {files.map((f) => (
-          <div key={f} className="flex items-center gap-3 border-b border-line-subtle px-3 py-2.5 last:border-0">
-            <span className="size-7 rounded-sm bg-surface-strong" />
-            <span className="type-body-sm truncate text-[12px] text-fg-muted">{f}</span>
-          </div>
-        ))}
-      </div>
-    </Stage>
-  );
-}
-
 /* 3. Asks instead of guessing: processing pauses on a question, then finishes once answered. */
-function AskVignette() {
+export function AskVignette() {
   const { ref, step } = useLoop<HTMLDivElement>(7, 750);
   const progress = [30, 62, 85, 85, 85, 100, 100][step];
   const asking = step >= 2 && step <= 4;
@@ -214,7 +166,7 @@ function AskVignette() {
 }
 
 /* 4. Updates in place: values change row by row, the formula total stays a formula. */
-function InPlaceVignette() {
+export function InPlaceVignette() {
   const before = [
     ["SNAP", "412"],
     ["LIHEAP", "96"],
@@ -265,7 +217,7 @@ function InPlaceVignette() {
 }
 
 /* 5. Follows the file: the path changes, Dropdone re-finds the workbook and updates it. */
-function FollowVignette() {
+export function FollowVignette() {
   const { ref, step } = useLoop<HTMLDivElement>(6, 800);
   const moved = step >= 1;
   const searching = step === 2;
@@ -315,7 +267,7 @@ function FollowVignette() {
 }
 
 /* 6. Never leaves your computer: the file travels export → Dropdone → workbook inside the machine. */
-function LocalVignette() {
+export function LocalVignette() {
   const { ref, step } = useLoop<HTMLDivElement>(4, 800);
   const pos = ["left-[10%]", "left-[43%]", "left-[76%]", "left-[76%]"][step];
   const nodes = [

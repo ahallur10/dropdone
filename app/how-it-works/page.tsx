@@ -82,7 +82,7 @@ export default function HowItWorks() {
           <div className="mx-auto flex max-w-site flex-col items-start gap-6 px-6 py-24 md:py-32">
             <h2 className="max-w-[20ch]">Have your first recipe ready by next week.</h2>
             <div className="flex flex-wrap gap-3">
-              <Link href="/#join" className="btn-brand no-underline">
+              <Link href="/#join" className="btn-primary no-underline">
                 Get early access
               </Link>
               <Link href="/features" className="btn-ghost no-underline">
