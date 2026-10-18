@@ -417,7 +417,7 @@ function StatusBar({ recipes }: { recipes: number }) {
         <span className="size-1.5 rounded-full bg-success" />
         {recipes} cleanups ready
       </span>
-      <span className="type-caption">Weekly runs use no AI</span>
+      <span className="type-caption">Runs use no AI</span>
       <span className="type-caption ml-auto">Dropdone {account.version} · Early access</span>
     </div>
   );

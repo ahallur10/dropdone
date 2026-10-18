@@ -31,7 +31,7 @@ export const featureCopy: Record<FeatureKey, { title: string; body: string }> = 
   },
   local: {
     title: "Stays on your computer",
-    body: "Cleaning happens on your machine. Exports and workbooks are never uploaded, unless you turn on Pro's adjusted refresh.",
+    body: "Cleaning happens on your machine. Exports and workbooks are never uploaded, unless you turn on Pro's suggested fixes.",
   },
 };
 

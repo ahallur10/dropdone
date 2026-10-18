@@ -114,7 +114,7 @@ export function Waitlist() {
             {error}
           </p>
         ) : (
-          <p id="waitlist-note" className="type-caption">No spam. One email when your download is ready.</p>
+          <p id="waitlist-note" className="type-caption">No spam. A confirmation now, and one email when your download is ready.</p>
         )}
       </form>
     );

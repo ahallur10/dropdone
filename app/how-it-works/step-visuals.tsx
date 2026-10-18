@@ -80,7 +80,7 @@ export function ReviewSteps() {
         {approved ? (
           <span className="type-label flex items-center gap-2 text-sm text-brand">
             <Donut stage="done" progress={100} size={22} />
-            Approved. It runs exactly like this every week.
+            Approved. It runs exactly like this every time.
           </span>
         ) : (
           <button

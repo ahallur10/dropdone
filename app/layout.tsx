@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { epilogue, geistSans, geistMono } from "./fonts";
 import "./globals.css";
+import { HashScroll } from "./_components/hash-scroll";
 
 export const metadata: Metadata = {
   title: "Dropdone: Show it once. Drop it forever.",
@@ -25,7 +26,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${epilogue.variable} ${geistSans.variable} ${geistMono.variable}`}
     >
-      <body className="min-h-dvh">{children}</body>
+      <body className="min-h-dvh">
+        {children}
+        <HashScroll />
+      </body>
     </html>
   );
 }

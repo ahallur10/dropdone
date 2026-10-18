@@ -44,7 +44,7 @@ export function SettingsView() {
             }
           />
           <SettingRow
-            title="Weekly runs"
+            title="Every run"
             description="Approved steps run exactly as written. No AI, no internet needed."
             control={<span className="type-data text-xs text-fg-soft">Never use AI</span>}
           />
@@ -59,11 +59,11 @@ export function SettingsView() {
           <SettingRow
             title={
               <span className="flex items-center gap-2">
-                Adjusted refresh <ProBadge />
+                Suggested fixes <ProBadge />
               </span>
             }
             description="Instead of stopping, Dropdone proposes the fix. Nothing is saved until you approve it."
-            control={<Toggle label="Adjusted refresh" checked={false} disabled />}
+            control={<Toggle label="Suggested fixes" checked={false} disabled />}
           />
         </Section>
 

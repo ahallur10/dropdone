@@ -101,7 +101,7 @@ export function HomeView({
           body={stoppedReason.body}
           actions={
             <>
-              <button disabled className={`${btnSecondary} gap-2`} title="Pro: adjusted refresh proposes the fix for you to approve">
+              <button disabled className={`${btnSecondary} gap-2`} title="Pro suggests the fix for you to approve">
                 Propose a fix <ProBadge />
               </button>
               <button onClick={() => onReteach(stopped.recipeId)} className="btn-primary min-h-9 cursor-pointer px-3.5 text-sm">
