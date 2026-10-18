@@ -51,6 +51,23 @@ export function ExportFlip() {
   const [zoom, setZoom] = useState<{ src: string; alt: string } | null>(null);
   const cleaned = side === "cleaned";
 
+  // Phones flip each card on its own (tap, or swipe either way). Each card keeps its own
+  // rotation so a swipe turns it in the direction of the swipe. Larger screens use the toggle.
+  const [phone, setPhone] = useState(false);
+  const [angles, setAngles] = useState([0, 0, 0]);
+  const touch = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 47.99rem)");
+    const apply = () => setPhone(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  const flip = (i: number, dir: 1 | -1 = 1) => setAngles((a) => a.map((v, j) => (j === i ? v + dir * 180 : v)));
+  const isCleaned = (i: number) => (phone ? Math.abs(angles[i] / 180) % 2 === 1 : cleaned);
+
   const closeRef = useRef<HTMLButtonElement>(null);
 
   // While the lightbox is open: Escape closes it, the page behind doesn't scroll, focus
@@ -94,7 +111,7 @@ export function ExportFlip() {
         <div
           role="group"
           aria-label="Show the exports"
-          className="grid grid-cols-2 gap-1 rounded-lg border border-line bg-surface p-1">
+          className="hidden grid-cols-2 gap-1 rounded-lg border border-line bg-surface p-1 md:grid">
           {(["original", "cleaned"] as Side[]).map((s) => (
             <button
               key={s}
@@ -111,34 +128,79 @@ export function ExportFlip() {
         </div>
       </div>
 
+      <p className="type-label -mt-2 flex items-center gap-2 text-brand md:hidden">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 12a8 8 0 0 1 13.6-5.7L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.6 5.7L4 15.5M4 20v-4.5h4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        Tap or swipe a card to see it cleaned
+      </p>
+
       <ul className="grid gap-4 md:grid-cols-3">
         {examples.map((ex, i) => (
-          <li key={ex.system} className="flex flex-col gap-4">
-            {/* Flip card */}
+          <li key={ex.system} className="relative flex flex-col gap-4">
+            {/* Flip card: on phones a tap or swipe flips it; on larger screens it opens full size */}
             <button
               onClick={() => {
+                if (phone) return flip(i);
                 const face = cleaned ? ex.cleaned : ex.original;
                 setZoom({ src: face.src, alt: `${ex.system} ${ex.kind}, ${side}` });
               }}
-              className="group relative block h-72 w-full cursor-zoom-in [perspective:1400px]"
-              aria-label={`${ex.system} ${ex.kind}: view the ${side} version full size`}
+              onTouchStart={(e) => {
+                touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+              }}
+              onTouchEnd={(e) => {
+                const start = touch.current;
+                touch.current = null;
+                if (!phone || !start) return;
+                const dx = e.changedTouches[0].clientX - start.x;
+                const dy = e.changedTouches[0].clientY - start.y;
+                // A sideways swipe flips the card that way; the tap that follows is ignored.
+                if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                  e.preventDefault();
+                  flip(i, dx > 0 ? 1 : -1);
+                }
+              }}
+              className={`group relative block h-72 w-full touch-pan-y [perspective:1400px] ${phone ? "cursor-pointer" : "cursor-zoom-in"}`}
+              aria-label={
+                phone
+                  ? `${ex.system} ${ex.kind}: showing the ${isCleaned(i) ? "cleaned" : "original"} version. Tap to flip.`
+                  : `${ex.system} ${ex.kind}: view the ${side} version full size`
+              }
             >
               <span
                 className="relative block h-full w-full transition-transform duration-700 ease-[cubic-bezier(.2,.7,.2,1)] [transform-style:preserve-3d] motion-reduce:transition-none"
-                style={{ transform: cleaned ? "rotateY(180deg)" : "none", transitionDelay: `${i * 120}ms` }}
+                style={{
+                  transform: phone ? `rotateY(${angles[i]}deg)` : cleaned ? "rotateY(180deg)" : "none",
+                  transitionDelay: phone ? "0ms" : `${i * 120}ms`,
+                }}
               >
                 <Face src={ex.original.src} label="Original" tone="muted" />
                 <Face src={ex.cleaned.src} label="Cleaned" tone="brand" back />
               </span>
             </button>
+            {phone && (
+              <button
+                type="button"
+                onClick={() => {
+                  const face = isCleaned(i) ? ex.cleaned : ex.original;
+                  setZoom({ src: face.src, alt: `${ex.system} ${ex.kind}, ${isCleaned(i) ? "cleaned" : "original"}` });
+                }}
+                aria-label={`View the ${ex.system} ${isCleaned(i) ? "cleaned" : "original"} version full size`}
+                className="absolute right-2.5 top-2.5 z-10 flex size-9 cursor-zoom-in items-center justify-center rounded-md bg-page/80 text-fg backdrop-blur"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            )}
 
             <div className="flex flex-col gap-1.5 px-1">
               <div className="flex items-baseline justify-between gap-3">
                 <p className="type-h4">{ex.system}</p>
                 <p className="type-data text-[11px] text-fg-subtle">{ex.kind}</p>
               </div>
-              <p className={`type-body-sm transition-colors ${cleaned ? "text-fg-soft" : ""}`}>
-                {cleaned ? ex.result : ex.problem}
+              <p className={`type-body-sm transition-colors ${isCleaned(i) ? "text-fg-soft" : ""}`}>
+                {isCleaned(i) ? ex.result : ex.problem}
               </p>
             </div>
           </li>

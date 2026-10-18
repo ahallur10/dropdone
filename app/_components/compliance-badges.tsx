@@ -20,7 +20,8 @@ export function ComplianceBadges() {
   return (
     <div className="mx-auto flex max-w-site flex-col items-center gap-5 px-6 pb-16 pt-10">
       <p className="type-caption text-fg-muted">Security standards</p>
-      <ul className="flex flex-wrap justify-center gap-4">
+      {/* Equal-width cards: stacked on phones, side by side from tablets up */}
+      <ul className="grid w-full max-w-[400px] gap-3 sm:max-w-[640px] sm:grid-cols-2 sm:gap-4">
         {badges.map((b) => (
           <li key={b.name} className="flex items-center gap-4 rounded-xl border border-line bg-surface py-3 pl-3 pr-6">
             <Seal top={b.seal.top} bottom={b.seal.bottom} />

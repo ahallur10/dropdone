@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LegacySystems } from "./legacy-systems";
 import { PixelLayers } from "./pixel-layers";
+import { HeroVideo } from "./hero-video";
 
 export function Hero() {
   return (
@@ -43,16 +44,7 @@ export function Hero() {
         <div className="animate-fade-in relative aspect-[1928/1076] w-full overflow-hidden rounded-xl border border-line bg-surface lg:absolute lg:right-0 lg:top-1/2 lg:w-[64vw] lg:-translate-y-1/2 lg:rounded-none lg:border-0 lg:bg-transparent hero-fade">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/dropdone-hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
-          <video
-            className="absolute inset-0 h-full w-full object-cover motion-reduce:hidden"
-            src="/dropdone-hero.mp4"
-            poster="/dropdone-hero-poster.jpg"
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-label="A broom slowly sweeping messy spreadsheet data on the left, while a robot vacuum clears a whole column on the right"
-          />
+          <HeroVideo label="A broom slowly sweeping messy spreadsheet data on the left, while a robot vacuum clears a whole column on the right" />
         </div>
       </div>
     </section>
