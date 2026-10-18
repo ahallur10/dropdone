@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { LegacySystems } from "./legacy-systems";
+import { PixelLayers } from "./pixel-layers";
 
 export function Hero() {
   return (
-    <section id="top" className="relative flex min-h-[100svh] items-center overflow-hidden">
-      <div className="mx-auto flex w-full max-w-site flex-col gap-12 px-6 pb-20 pt-28 lg:pb-24 lg:pt-32">
+    <section id="top" className="relative flex min-h-[100svh] items-center overflow-hidden lg:min-h-[min(100svh,calc(36vw+12rem))]">
+      <div className="mx-auto flex w-full max-w-site flex-col gap-12 px-6 pb-8 pt-28 lg:pb-12 lg:pt-32">
         {/* Copy */}
         <div className="relative z-10 flex flex-col gap-6 lg:max-w-[46%]">
           <p className="type-eyebrow">For the export you clean every week</p>
@@ -19,11 +20,12 @@ export function Hero() {
           </p>
           <LegacySystems />
           <div className="flex flex-wrap items-center gap-3">
-            <a className="btn-brand no-underline" href="#join">
+            <a className="btn-primary no-underline transition-colors hover:bg-fg-soft" href="#join">
               <DownloadIcon />
               Download for Mac and Windows
             </a>
-            <a className="btn-primary no-underline" href="#join">
+            <a className="btn-primary px-btn no-underline" href="#join">
+              <PixelLayers />
               Get early access
             </a>
           </div>

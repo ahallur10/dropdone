@@ -296,6 +296,72 @@
     color: var(--color-page);
   }
 
+  /* "Get early access" hover (see app/_components/pixel-layers.tsx). The button lifts
+     slightly, a lime fill sweeps in behind the label with a staggered pixel edge, and a
+     dozen dark squares float near the edges for as long as you hover. Everything is
+     clipped to the rounded shape; the label sits above both layers and never moves. */
+  .px-btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    transition: translate 220ms cubic-bezier(.2,.7,.2,1), scale 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms ease;
+  }
+  .px-btn:is(:hover, :focus-visible) {
+    translate: 0 -2px;
+    scale: 1.025;
+    box-shadow: 0 8px 22px -10px rgb(209 254 23 / 0.45);
+  }
+  .px-btn:active { scale: 0.985; translate: 0 -1px; transition-duration: 90ms; }
+  .px-btn > svg { transition: translate 220ms cubic-bezier(.2,.7,.2,1); }
+  .px-btn:is(:hover, :focus-visible) > svg { translate: 3px 0; }
+
+  /* Lime fill: a solid sweep plus a band of 4px checker cells at its leading edge, so the
+     colour arrives cell by cell rather than as a straight wipe. */
+  .px-btn__fill {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-brand);
+    --px-band: 14%;
+    -webkit-mask:
+      linear-gradient(90deg, #000 calc(var(--px-sweep) - var(--px-band)), transparent 0),
+      conic-gradient(#000 25%, transparent 0 50%, #000 0 75%, transparent 0) 0 0 / 8px 8px,
+      linear-gradient(90deg, transparent calc(var(--px-sweep) - var(--px-band)), #000 0 var(--px-sweep), transparent 0);
+    -webkit-mask-composite: source-over, source-in;
+    mask:
+      linear-gradient(90deg, #000 calc(var(--px-sweep) - var(--px-band)), transparent 0) add,
+      conic-gradient(#000 25%, transparent 0 50%, #000 0 75%, transparent 0) 0 0 / 8px 8px intersect,
+      linear-gradient(90deg, transparent calc(var(--px-sweep) - var(--px-band)), #000 0 var(--px-sweep), transparent 0);
+    opacity: 0;
+    transition: opacity 240ms ease, --px-sweep 0s linear 240ms;
+  }
+  .px-btn:is(:hover, :focus-visible) .px-btn__fill {
+    --px-sweep: 116%;
+    opacity: 1;
+    transition: --px-sweep 300ms steps(10, end), opacity 0s;
+  }
+
+  /* Floating squares: present for the whole hover, fading out on leave */
+  .px-btn__dots {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .px-btn__dots > span {
+    position: absolute;
+    background: var(--color-page);
+    opacity: var(--o);
+    animation: px-float 2s ease-in-out infinite alternate;
+    animation-play-state: paused;
+  }
+  .px-btn:is(:hover, :focus-visible) .px-btn__dots {
+    opacity: 1;
+    transition: opacity 220ms ease 180ms;
+  }
+  .px-btn:is(:hover, :focus-visible) .px-btn__dots > span { animation-play-state: running; }
+
   .card {
     background: var(--color-surface);
     border: 1px solid var(--color-line-subtle);
@@ -391,4 +457,26 @@ html { scroll-behavior: smooth; }
     mask-image: linear-gradient(to right, transparent 0%, #000 22%), linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
     mask-composite: intersect;
   }
+}
+
+
+/* Sweep position for the button's lime fill; registered so it can transition */
+@property --px-sweep {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: -16%;
+}
+
+/* A floating square: drifts a couple of px, dims and shrinks a touch, never disappears */
+@keyframes px-float {
+  from { translate: 0 0; scale: 1; opacity: var(--o); }
+  to { translate: var(--dx) var(--dy); scale: 0.75; opacity: calc(var(--o) * 0.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .px-btn, .px-btn > svg { transition: background-color 150ms ease; }
+  .px-btn:is(:hover, :focus-visible), .px-btn:active { translate: none; scale: none; box-shadow: none; }
+  .px-btn:is(:hover, :focus-visible) > svg { translate: none; }
+  .px-btn__fill, .px-btn:is(:hover, :focus-visible) .px-btn__fill { -webkit-mask: none; mask: none; transition: opacity 150ms ease; }
+  .px-btn__dots { display: none; }
 }

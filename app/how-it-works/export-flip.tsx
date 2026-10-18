@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /*
  * Three different legacy exports, side by side. "Original" shows each messy export; "Cleaned"
@@ -51,27 +51,55 @@ export function ExportFlip() {
   const [zoom, setZoom] = useState<{ src: string; alt: string } | null>(null);
   const cleaned = side === "cleaned";
 
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // While the lightbox is open: Escape closes it, the page behind doesn't scroll, focus
+  // moves to the close button, and goes back to the card that opened it afterwards.
   useEffect(() => {
     if (!zoom) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setZoom(null);
+    const opener = document.activeElement as HTMLElement | null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setZoom(null);
+      if (e.key === "Tab") {
+        e.preventDefault();
+        closeRef.current?.focus();
+      }
+    };
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = overflow;
+      opener?.focus();
+    };
   }, [zoom]);
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-end justify-between gap-6">
         {/* Same size and underline treatment as the page's opening headline */}
-        <h2 className="type-h1 max-w-[18ch]">
-          Three different systems. One{" "}
-          <span className="underline decoration-brand decoration-[3px] underline-offset-[8px]">clean</span> result.
-        </h2>
-        <div role="tablist" aria-label="Show the exports" className="grid grid-cols-2 gap-1 rounded-lg border border-line bg-surface p-1">
+        <div className="flex flex-col gap-4">
+          {/* Extra leading so the underlined "clean" doesn't crowd the line above */}
+          <h2 className="type-h1 max-w-[18ch] leading-[1.2]!">
+            Three different systems. One{" "}
+            <span className="underline decoration-brand decoration-[3px] underline-offset-[8px]">clean</span> result.
+          </h2>
+          <p className="type-body max-w-[54ch] text-fg-muted">
+            These are just three examples, not a list of what&apos;s supported. If your system exports the same report
+            each time, Dropdone can learn its cleanup.
+          </p>
+        </div>
+        <div
+          role="group"
+          aria-label="Show the exports"
+          className="grid grid-cols-2 gap-1 rounded-lg border border-line bg-surface p-1">
           {(["original", "cleaned"] as Side[]).map((s) => (
             <button
               key={s}
-              role="tab"
-              aria-selected={side === s}
+              type="button"
+              aria-pressed={side === s}
               onClick={() => setSide(s)}
               className={`type-label min-h-10 cursor-pointer rounded-md px-5 text-sm capitalize transition-colors ${
                 side === s ? (s === "cleaned" ? "bg-brand text-fg-inverse" : "bg-surface-strong text-fg") : "text-fg-muted hover:text-fg"
@@ -120,13 +148,21 @@ export function ExportFlip() {
       {zoom && (
         <div
           role="dialog"
+          aria-modal="true"
           aria-label={zoom.alt}
           onClick={() => setZoom(null)}
           className="fixed inset-0 z-[60] flex cursor-zoom-out items-center justify-center bg-page/90 p-4 backdrop-blur-sm md:p-10"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={zoom.src} alt={zoom.alt} className="max-h-full max-w-full rounded-lg border border-line bg-fg object-contain" />
-          <span className="type-caption absolute right-4 top-4 rounded-md bg-surface px-3 py-1.5 text-fg-soft">Click anywhere to close</span>
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={() => setZoom(null)}
+            className="type-caption absolute right-4 top-4 cursor-pointer rounded-md bg-surface px-3 py-1.5 text-fg-soft hover:text-fg"
+          >
+            Close <span className="text-fg-subtle">· Esc</span>
+          </button>
         </div>
       )}
     </div>

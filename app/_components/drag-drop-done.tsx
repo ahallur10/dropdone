@@ -23,13 +23,15 @@ const T = {
   leave: [3100, 3800],
   rowIn: 2950,
   clean: [3100, 6600],
+  zoomIn: [3250, 3850],
+  zoomOut: [6600, 7050],
   sheet: [7100, 7650],
   fadeOut: [11800, 12300],
 } as const;
 
 const PHASES = [
   { key: "drag", n: "01", title: "Drag", body: "Grab this week's export straight out of your system, mess and all.", start: 0 },
-  { key: "drop", n: "02", title: "Drop", body: "Drop it on its recipe. Dropdone runs the steps you approved, exactly as written.", start: T.drag[1] },
+  { key: "drop", n: "02", title: "Drop", body: "Drop it on its saved cleanup. Dropdone runs the steps you approved, exactly as written.", start: T.drag[1] },
   { key: "done", n: "03", title: "Done", body: "It checks the result against your workbook, then updates it in place.", start: T.clean[1] },
 ] as const;
 
@@ -40,6 +42,10 @@ const PDF = { x: 34, y: 150, w: 344, h: 300, grabX: 172, grabY: 118 };
 const DROP_POINT = { x: 735, y: 410 };
 const CURSOR_START = { x: 330, y: 640 };
 const CURSOR_END = { x: 940, y: 660 };
+// While the cleanup runs, the camera moves in on the progress row so the stage, the steps
+// and the percentage are readable. FOCUS is the row's centre in stage pixels.
+const FOCUS = { x: 746, y: 252 };
+const ZOOM = 1.75;
 
 export function DragDropDone({ scenario = countyScenario }: { scenario?: DddScenario }) {
   const [t, setT] = useState(0);
@@ -125,7 +131,7 @@ export function DragDropDone({ scenario = countyScenario }: { scenario?: DddScen
         className="relative w-full overflow-hidden rounded-xl border border-line-subtle bg-section"
         style={{ height: H * scale }}
         role="img"
-        aria-label={`Animation: ${scenario.sheet.file} is dragged onto the ${scenario.recipe} recipe in Dropdone, cleaned, and saved into ${scenario.output.file}.`}
+        aria-label={`Animation: ${scenario.sheet.file} is dragged onto the ${scenario.recipe} cleanup in Dropdone, cleaned, and saved into ${scenario.output.file}.`}
       >
         <div className="absolute left-0 top-0 origin-top-left" style={{ width: W, height: H, transform: `scale(${scale})` }}>
           <Scene t={t} scenario={scenario} />
@@ -155,16 +161,17 @@ function Scene({ t, scenario }: { t: number; scenario: DddScenario }) {
   const s = t < T.drag[0] ? (t >= T.reach[1] ? 1.03 : 1) : lerp(1.03, 0.4, drag) * (1 - 0.75 * ease(seg(t, ...T.sink)));
   const pdfPos =
     t < T.drag[0] ? { x: PDF.x, y: PDF.y } : { x: cursor.x - PDF.grabX * s, y: cursor.y - PDF.grabY * s };
-  const pdfRotate = t < T.drag[0] ? -3 : lerp(-3, 2, drag);
   const pdfOpacity = Math.min(seg(t, 0, 350), 1 - seg(t, T.sink[0] + 150, T.sink[1]));
 
   const overlay = t >= T.overlay[0] && t < T.overlay[1];
   const rowVisible = t >= T.rowIn && fadeAll > 0;
   const progress = Math.round(seg(t, ...T.clean) * 100);
   const sheetIn = ease(seg(t, ...T.sheet));
+  const zoom = ease(seg(t, ...T.zoomIn)) * (1 - ease(seg(t, ...T.zoomOut)));
+  const camera = `translate(${W / 2}px, ${H / 2}px) scale(${lerp(1, ZOOM, zoom)}) translate(${-lerp(W / 2, FOCUS.x, zoom)}px, ${-lerp(H / 2, FOCUS.y, zoom)}px)`;
 
   return (
-    <>
+    <div className="absolute inset-0 origin-top-left" style={{ transform: camera }}>
       <MiniApp
         scenario={scenario}
         overlay={overlay}
@@ -181,7 +188,7 @@ function Scene({ t, scenario }: { t: number; scenario: DddScenario }) {
           width: PDF.w,
           height: PDF.h,
           opacity: pdfOpacity,
-          transform: `translate(${pdfPos.x}px, ${pdfPos.y}px) scale(${s}) rotate(${pdfRotate}deg)`,
+          transform: `translate(${pdfPos.x}px, ${pdfPos.y}px) scale(${s})`,
         }}
       >
         <ExcelSheet scenario={scenario} lifted={grabbing} />
@@ -214,7 +221,7 @@ function Scene({ t, scenario }: { t: number; scenario: DddScenario }) {
           strokeLinejoin="round"
         />
       </svg>
-    </>
+    </div>
   );
 }
 
@@ -320,7 +327,7 @@ function MiniApp({
           {overlay && (
             <div className="absolute inset-3 top-14 flex flex-col items-center justify-start gap-2 rounded-lg pt-20 border-2 border-dashed border-brand bg-page/85">
               <span className="type-h4">Drop to run</span>
-              <span className="type-caption">Runs the {scenario.recipe} recipe</span>
+              <span className="type-caption">Runs the {scenario.recipe} cleanup</span>
             </div>
           )}
         </div>

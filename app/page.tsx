@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { SiteHeader } from "./_components/site-header";
 import { SiteFooter } from "./_components/site-footer";
+import { PixelDivider } from "./_components/pixel-divider";
 import { Hero } from "./_components/hero";
 import { TrustedBy } from "./_components/trusted-by";
 import { Security } from "./_components/security";
 import { FeatureCard } from "./_components/features";
 import { PricingTiers } from "./_components/pricing-tiers";
 import { DragDropDone } from "./_components/drag-drop-done";
-import { Waitlist } from "./_components/waitlist";
+import { JoinSection } from "./_components/join-section";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <main>
         <Hero />
         <TrustedBy />
+        <PixelDivider seed={14} />
 
         {/* How it works */}
         <section id="how" className="scroll-mt-16">
@@ -34,7 +36,8 @@ export default function Home() {
         </section>
 
         {/* Features */}
-        <section id="features" className="scroll-mt-16 border-y border-line-subtle bg-section">
+        <PixelDivider seed={1} />
+        <section id="features" className="scroll-mt-16">
           <div className="mx-auto flex max-w-site flex-col gap-10 px-6 py-24 md:py-32">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div className="flex flex-col gap-4">
@@ -51,11 +54,13 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <PixelDivider seed={2} />
 
         <Security />
 
         {/* Pricing */}
-        <section id="pricing" className="scroll-mt-16 border-y border-line-subtle bg-section">
+        <PixelDivider seed={3} />
+        <section id="pricing" className="scroll-mt-16">
           <div className="mx-auto flex max-w-site flex-col gap-10 px-6 py-24 md:py-32">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <h2 className="max-w-[22ch]">Free to start. Pro keeps it working.</h2>
@@ -66,24 +71,10 @@ export default function Home() {
             <PricingTiers />
           </div>
         </section>
+        <PixelDivider seed={4} />
 
-        {/* Waitlist */}
-        <section id="join" className="scroll-mt-16">
-          <div className="mx-auto grid max-w-site items-center gap-12 px-6 py-24 md:grid-cols-[auto_1fr] md:gap-16 md:py-32">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/dropdone-icon-animated.svg" alt="" className="size-28 md:size-40" />
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4">
-                <h2 className="max-w-[20ch]">Stop cleaning the same report twice.</h2>
-                <p className="type-lead max-w-[60ch] text-fg-muted">
-                  Dropdone is coming to Mac and Windows. Leave your email and we&apos;ll send
-                  the download when your spot opens.
-                </p>
-              </div>
-              <Waitlist />
-            </div>
-          </div>
-        </section>
+        {/* Join */}
+        <JoinSection />
       </main>
 
       <SiteFooter />

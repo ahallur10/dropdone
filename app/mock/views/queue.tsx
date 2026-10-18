@@ -43,12 +43,12 @@ export function QueueView({
         <div className="grid grid-cols-[32px_minmax(0,1.2fr)_minmax(0,1fr)_240px_150px] gap-5 border-b border-line-subtle px-5 py-3">
           <ColHead>#</ColHead>
           <ColHead>Export</ColHead>
-          <ColHead>Recipe</ColHead>
+          <ColHead>Cleanup</ColHead>
           <ColHead className="text-right">Status</ColHead>
           <ColHead className="text-right">Actions</ColHead>
         </div>
         {active.length === 0 ? (
-          <EmptyState>Your queue is empty. Drop an export on a recipe to run it.</EmptyState>
+          <EmptyState>Your queue is empty. Drop an export on a cleanup to run it.</EmptyState>
         ) : (
           <ol>
             {active.map((it, i) => {

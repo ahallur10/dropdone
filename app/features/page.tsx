@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { SiteHeader } from "../_components/site-header";
 import { SiteFooter } from "../_components/site-footer";
+import { PixelDivider } from "../_components/pixel-divider";
 import {
   AskQuestion,
   ChecksBeforeSave,
@@ -13,6 +13,7 @@ import {
   ProFixVisual,
   UndoRestore,
 } from "./visuals";
+import { JoinSection } from "../_components/join-section";
 
 export const metadata: Metadata = {
   title: "Features · Dropdone",
@@ -73,9 +74,6 @@ export default function FeaturesPage() {
         <section>
           <div className="mx-auto flex max-w-site flex-wrap items-end justify-between gap-8 px-6 pb-12 pt-36 md:pt-44">
             <div className="flex max-w-[640px] flex-col gap-6">
-              <span className="type-data self-start rounded-pill border border-line bg-surface px-3 py-1 text-[11px] uppercase tracking-[0.1em] text-fg-soft">
-                Features
-              </span>
               <h1>
                 One job, done the way you&apos;d{" "}
                 <span className="underline decoration-brand decoration-[3px] underline-offset-[8px]">do it</span>.
@@ -85,9 +83,6 @@ export default function FeaturesPage() {
                 same cleanup every week, then checks its work.
               </p>
             </div>
-            <Link href="/#join" className="btn-primary no-underline">
-              Get early access
-            </Link>
           </div>
         </section>
 
@@ -155,20 +150,9 @@ export default function FeaturesPage() {
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="border-t border-line-subtle bg-section">
-          <div className="mx-auto flex max-w-site flex-col items-start gap-6 px-6 py-24 md:py-32">
-            <h2 className="max-w-[20ch]">Stop cleaning the same report twice.</h2>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/#join" className="btn-primary no-underline">
-                Get early access
-              </Link>
-              <Link href="/how-it-works" className="btn-ghost no-underline">
-                See how it works
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* Join */}
+        <PixelDivider seed={5} />
+        <JoinSection secondary={{ href: "/how-it-works", label: "See how it works" }} />
       </main>
       <SiteFooter />
     </>

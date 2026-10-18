@@ -187,8 +187,9 @@ export function Donut({ stage, progress, size = 40 }: { stage: Stage; progress: 
       </svg>
       <span className="absolute inset-0 flex items-center justify-center">
         {stage === "done" ? (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="text-brand">
-            <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" />
+          // Sized to the ring so small donuts don't get a heavy, oversized check.
+          <svg width={Math.round(size * 0.57)} height={Math.round(size * 0.57)} viewBox="0 0 24 24" fill="none" aria-hidden="true" className="text-brand">
+            <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth={size < 24 ? 2.5 : 2.75} strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         ) : stage === "review" ? (
           <span className="type-label text-[14px] leading-none text-warning">!</span>

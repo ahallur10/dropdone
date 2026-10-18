@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SiteHeader } from "../_components/site-header";
 import { SiteFooter } from "../_components/site-footer";
+import { PixelDivider } from "../_components/pixel-divider";
 import { PricingTiers } from "../_components/pricing-tiers";
+import { JoinSection } from "../_components/join-section";
 
 export const metadata: Metadata = {
   title: "Pricing · Dropdone",
   description:
-    "Community is free and open source. Pro is $20 a month: AI for setup included, adjusted refresh when an export changes, and every recipe version saved.",
+    "Community is free and open source. Pro is $20 a month: AI for setup included, adjusted refresh when an export changes, and every version of your cleanups saved.",
 };
 
 type Value = string | boolean;
@@ -26,7 +27,7 @@ const groups: { title: string; rows: { label: string; values: [Value, Value, Val
   {
     title: "Every week",
     rows: [
-      { label: "Recipes", values: ["Unlimited", "Unlimited", "Unlimited, shared"] },
+      { label: "Saved cleanups", values: ["Unlimited", "Unlimited", "Unlimited, shared"] },
       { label: "Full workbook or single sheet refresh", values: [true, true, true] },
       { label: "Checks before saving", values: [true, true, true] },
       { label: "Backup before every write", values: [true, true, true] },
@@ -38,7 +39,7 @@ const groups: { title: string; rows: { label: string; values: [Value, Value, Val
     rows: [
       { label: "Stops safely, saves nothing", values: [true, true, true] },
       { label: "Adjusted refresh proposes the fix", values: [false, "Up to 5 workbooks", "Unlimited"] },
-      { label: "Recipe history with one-click undo", values: ["Current recipe only", true, true] },
+      { label: "Version history with one-click undo", values: ["Current version only", true, true] },
     ],
   },
   {
@@ -55,7 +56,7 @@ const groups: { title: string; rows: { label: string; values: [Value, Value, Val
 const faqs = [
   {
     q: "What's an API key, and do I need one?",
-    a: "Setup uses AI once per recipe to compare your before and after and write the steps. On Community you paste in a key from an AI provider, which your IT team may already have. On Pro it's included, so there's nothing to set up.",
+    a: "Setup uses AI once per cleanup to compare your before and after and write the steps. On Community you paste in a key from an AI provider, which your IT team may already have. On Pro it's included, so there's nothing to set up.",
   },
   {
     q: "Does my data get sent anywhere?",
@@ -71,7 +72,7 @@ const faqs = [
   },
   {
     q: "Is it really free?",
-    a: "Community is free and open source, with unlimited recipes. You only pay if you want AI included and the help Pro gives you when an export changes.",
+    a: "Community is free and open source, with unlimited saved cleanups. You only pay if you want AI included and the help Pro gives you when an export changes.",
   },
 ];
 
@@ -100,12 +101,13 @@ export default function PricingPage() {
         </section>
 
         {/* Plan comparison */}
-        <section className="border-y border-line-subtle bg-section">
+        <PixelDivider seed={8} />
+        <section>
           <div className="mx-auto flex max-w-site flex-col gap-10 px-6 py-20 md:py-28">
             <h2 className="max-w-[20ch]">Compare plans.</h2>
             <div className="-mx-6 overflow-x-auto px-6 lg:overflow-visible">
               <div className="min-w-[720px]" role="table" aria-label="Plan comparison">
-                <div role="row" className={`${GRID} z-20 border-b border-line bg-section lg:sticky lg:top-20`}>
+                <div role="row" className={`${GRID} z-20 border-b border-line bg-page lg:sticky lg:top-20`}>
                   <span role="columnheader" className="py-4" />
                   {plans.map((p) => (
                     <span
@@ -154,6 +156,7 @@ export default function PricingPage() {
             </div>
           </div>
         </section>
+        <PixelDivider seed={9} />
 
         {/* FAQ */}
         <section>
@@ -177,20 +180,9 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="border-t border-line-subtle bg-section">
-          <div className="mx-auto flex max-w-site flex-col items-start gap-6 px-6 py-24 md:py-32">
-            <h2 className="max-w-[20ch]">Stop cleaning the same report twice.</h2>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/#join" className="btn-primary no-underline">
-                Get early access
-              </Link>
-              <Link href="/how-it-works" className="btn-ghost no-underline">
-                See how it works
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* Join */}
+        <PixelDivider seed={10} />
+        <JoinSection secondary={{ href: "/compare", label: "Compare with other tools" }} />
       </main>
       <SiteFooter />
     </>

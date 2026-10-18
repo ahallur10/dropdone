@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { usePixelStrip } from "./pixel-divider";
+import { PixelLayers } from "./pixel-layers";
 
 // Every tab is its own page; the homepage also has short versions of each.
 const links = [
@@ -18,6 +21,7 @@ const SCROLL_THRESHOLD = 24;
 // away and the logo becomes the animated icon; back at the top it returns to normal.
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     let raf = 0;
@@ -67,22 +71,50 @@ export function SiteHeader() {
           />
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-8 md:flex">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="type-label text-fg-muted no-underline transition-colors hover:text-fg"
-            >
-              {l.label}
-            </Link>
-          ))}
+          {links.map((l) => {
+            const active = pathname === l.href || pathname.startsWith(`${l.href}/`);
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={active ? "page" : undefined}
+                className={`type-label relative no-underline transition-colors hover:text-fg ${active ? "text-fg" : "text-fg-muted"}`}
+              >
+                {l.label}
+                {active && <ActivePixels seed={l.href.length} />}
+              </Link>
+            );
+          })}
         </nav>
-        <Link href="/#join" className="btn-primary no-underline">
+        <Link href="#join" className="btn-primary px-btn no-underline">
+          <PixelLayers />
           Get early access
           <ArrowIcon />
         </Link>
       </div>
     </header>
+  );
+}
+
+// The section dividers' pixel strip, shrunk down to mark the page you're on.
+const NAV_STRIP = { pitch: 3, size: 2, rows: [0.42, 0.86, 0.6] };
+
+function ActivePixels({ seed }: { seed: number }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  usePixelStrip(ref, { ...NAV_STRIP, seed });
+  return (
+    <canvas
+      ref={ref}
+      aria-hidden="true"
+      className="pointer-events-none absolute -inset-x-2 top-full mt-1.5 block"
+      style={{
+        height: NAV_STRIP.rows.length * NAV_STRIP.pitch,
+        width: "calc(100% + 1rem)",
+        imageRendering: "pixelated",
+        maskImage: "linear-gradient(to right, transparent, #000 22%, #000 78%, transparent)",
+        WebkitMaskImage: "linear-gradient(to right, transparent, #000 22%, #000 78%, transparent)",
+      }}
+    />
   );
 }
 

@@ -238,14 +238,14 @@ export function MockApp() {
               <label className="flex h-9 w-80 items-center gap-2 rounded-md border border-line bg-surface px-3 text-fg-subtle focus-within:border-brand">
                 <SearchIcon />
                 <input
-                  placeholder="Search recipes and runs"
+                  placeholder="Search cleanups and runs"
                   className="type-body-sm w-full bg-transparent text-fg-soft outline-none placeholder:text-fg-subtle"
                 />
                 <kbd className="type-data rounded-sm border border-line px-1.5 text-[11px] text-fg-subtle">⌘K</kbd>
               </label>
               <button onClick={() => setTeaching({})} className="btn-brand min-h-9 cursor-pointer px-3.5 text-sm">
                 <span aria-hidden="true" className="text-lg leading-none">+</span>
-                New recipe
+                New cleanup
               </button>
             </div>
 
@@ -336,7 +336,7 @@ function Sidebar({
       <nav className="flex flex-col gap-0.5 px-3 pt-2">
         <NavItem open={open} icon={<HomeIcon />} label="Home" active={view === "home"} onClick={() => onNavigate("home")} dot={needsYou} />
         <NavItem open={open} icon={<QueueIcon />} label="My queue" badge={queueCount} active={view === "queue"} onClick={() => onNavigate("queue")} />
-        <NavItem open={open} icon={<WorkbookIcon />} label="Recipes" badge={recipeCount} subtle active={view === "recipes"} onClick={() => onNavigate("recipes")} />
+        <NavItem open={open} icon={<WorkbookIcon />} label="Cleanups" badge={recipeCount} subtle active={view === "recipes"} onClick={() => onNavigate("recipes")} />
         <NavItem open={open} icon={<ActivityIcon />} label="Activity" active={view === "activity"} onClick={() => onNavigate("activity")} />
       </nav>
 
@@ -415,7 +415,7 @@ function StatusBar({ recipes }: { recipes: number }) {
     <div className="flex h-8 shrink-0 items-center gap-4 border-t border-line-subtle bg-header px-5">
       <span className="type-caption flex items-center gap-1.5">
         <span className="size-1.5 rounded-full bg-success" />
-        {recipes} recipes ready
+        {recipes} cleanups ready
       </span>
       <span className="type-caption">Weekly runs use no AI</span>
       <span className="type-caption ml-auto">Dropdone {account.version} · Early access</span>

@@ -43,7 +43,7 @@ export function AccountView({ recipeCount }: { recipeCount: number }) {
               <ul className="flex flex-col gap-2">
                 <Feature>AI for setup with your own API key</Feature>
                 <Feature>When an export changes, it stops safely and you teach it again</Feature>
-                <Feature>Current recipe only</Feature>
+                <Feature>Current version only</Feature>
                 <Feature>{recipeCount} recipes</Feature>
               </ul>
             </div>
@@ -58,7 +58,7 @@ export function AccountView({ recipeCount }: { recipeCount: number }) {
               <ul className="flex flex-col gap-2">
                 <Feature>AI for setup included, no key needed</Feature>
                 <Feature>When an export changes, adjusted refresh proposes the fix and you approve</Feature>
-                <Feature>Every recipe version saved, with one-click undo</Feature>
+                <Feature>Every version of a cleanup saved, with one-click undo</Feature>
               </ul>
               <button className="btn-ghost mt-auto min-h-9 cursor-pointer text-sm">Upgrade to Pro</button>
             </div>
